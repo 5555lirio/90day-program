@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>90のワーク ご利用ガイド</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+
+  @page{size:A4;margin:0}
+
+  body{
+    font-family:'Noto Sans JP',sans-serif;
+    color:#3D3530;
+    line-height:1.8;
+    background:#fff;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+
+  .page{
+    width:210mm;height:297mm;
+    margin:0 auto;
+    position:relative;
+    overflow:hidden;
+    page-break-after:always;
+    background:#FAF7F4;
+  }
+  .page:last-child{page-break-after:auto}
+
+  /* ======== 表紙 ======== */
+  .cover{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;
+    background:linear-gradient(160deg,#FAF7F4 0%,#F5EDE4 40%,#FDF0F3 100%);
+  }
+  .cover-badge{
+    display:inline-block;
+    font-size:13px;font-weight:600;color:#C47A8A;
+    background:#FDF0F3;border:1.5px solid #E4B8C2;
+    padding:6px 24px;border-radius:30px;
+    margin-bottom:32px;letter-spacing:.1em;
+  }
+  .cover h1{
+    font-size:36px;font-weight:700;line-height:1.6;
+    color:#3D3530;margin-bottom:8px;
+  }
+  .cover h1 em{font-style:normal;color:#C4956A}
+  .cover .subtitle{
+    font-size:16px;color:#7A6F66;line-height:1.9;margin-bottom:48px;
+  }
+  .cover-phases{
+    display:flex;gap:20px;margin-bottom:48px;
+  }
+  .cover-phase{
+    background:#fff;border-radius:16px;padding:20px 24px;
+    box-shadow:0 2px 16px rgba(59,46,37,.07);
+    text-align:center;width:160px;
+  }
+  .cover-phase .num{font-size:28px;margin-bottom:6px}
+  .cover-phase .label{font-size:14px;font-weight:700;color:#8B7355;margin-bottom:4px}
+  .cover-phase .desc{font-size:11px;color:#7A6F66;line-height:1.6}
+  .cover-footer{
+    position:absolute;bottom:40px;
+    font-size:11px;color:#B5A48B;
+  }
+
+  /* ======== 内側ページ共通 ======== */
+  .inner{padding:48px 56px}
+  .inner .page-title{
+    font-size:24px;font-weight:700;color:#3D3530;
+    margin-bottom:8px;line-height:1.5;
+  }
+  .inner .page-title em{font-style:normal;color:#C4956A}
+  .inner .page-subtitle{
+    font-size:14px;color:#7A6F66;margin-bottom:32px;line-height:1.8;
+  }
+
+  /* セクションカード */
+  .card{
+    background:#fff;border-radius:16px;
+    box-shadow:0 2px 16px rgba(59,46,37,.07);
+    padding:28px 32px;margin-bottom:20px;
+  }
+  .card h3{
+    font-size:15px;font-weight:700;color:#8B7355;
+    margin-bottom:14px;display:flex;align-items:center;gap:10px;
+  }
+  .card h3 .icon{font-size:20px}
+  .card p{font-size:14px;line-height:2;color:#3D3530}
+  .card ul{list-style:none;padding:0}
+  .card li{
+    font-size:14px;line-height:1.9;
+    padding:8px 0 8px 24px;
+    position:relative;
+    border-bottom:1px solid #E8E0D8;
+  }
+  .card li:last-child{border-bottom:none}
+  .card li::before{
+    content:'';position:absolute;left:4px;top:16px;
+    width:8px;height:8px;border-radius:50%;
+    background:#C47A8A;opacity:.5;
+  }
+
+  /* Phase紹介 */
+  .phase-row{
+    display:flex;gap:16px;margin-bottom:20px;
+  }
+  .phase-box{
+    flex:1;background:#fff;border-radius:16px;
+    box-shadow:0 2px 16px rgba(59,46,37,.07);
+    padding:24px;text-align:center;
+  }
+  .phase-num{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:40px;height:40px;border-radius:50%;
+    font-size:16px;font-weight:700;color:#fff;
+    margin-bottom:10px;
+  }
+  .phase-num.p1{background:#C4956A}
+  .phase-num.p2{background:#C47A8A}
+  .phase-num.p3{background:#8B7355}
+  .phase-name{font-size:16px;font-weight:700;color:#3D3530;margin-bottom:4px}
+  .phase-sub{font-size:12px;color:#7A6F66;margin-bottom:10px}
+  .phase-desc{font-size:13px;color:#3D3530;line-height:1.9;text-align:left}
+
+  /* ステップ */
+  .step{
+    display:flex;gap:20px;align-items:flex-start;
+    margin-bottom:24px;
+  }
+  .step-circle{
+    width:48px;height:48px;border-radius:50%;
+    background:linear-gradient(135deg,#C4956A,#D4A574);
+    color:#fff;font-size:20px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .step-body h4{font-size:16px;font-weight:700;color:#3D3530;margin-bottom:4px}
+  .step-body p{font-size:13px;color:#7A6F66;line-height:1.8}
+
+  /* QRコードエリア */
+  .qr-area{
+    background:#fff;border-radius:16px;
+    box-shadow:0 2px 16px rgba(59,46,37,.07);
+    padding:32px;text-align:center;margin-bottom:20px;
+  }
+  .qr-placeholder{
+    width:160px;height:160px;
+    background:#F5EDE4;border:2px dashed #E8E0D8;border-radius:12px;
+    margin:0 auto 16px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;color:#B5A48B;line-height:1.6;
+  }
+  .qr-url{
+    font-size:14px;color:#C4956A;font-weight:600;
+    word-break:break-all;
+  }
+  .qr-note{font-size:12px;color:#7A6F66;margin-top:8px}
+
+  /* コツ */
+  .tip{
+    display:flex;gap:16px;align-items:flex-start;
+    padding:16px 0;border-bottom:1px solid #E8E0D8;
+  }
+  .tip:last-child{border-bottom:none}
+  .tip-icon{
+    width:40px;height:40px;border-radius:12px;
+    background:#FDF0F3;
+    display:flex;align-items:center;justify-content:center;
+    font-size:20px;flex-shrink:0;
+  }
+  .tip-body h4{font-size:14px;font-weight:700;color:#3D3530;margin-bottom:2px}
+  .tip-body p{font-size:13px;color:#7A6F66;line-height:1.8}
+
+  /* メッセージ */
+  .message-box{
+    background:linear-gradient(135deg,#FDF0F3 0%,#FAF7F4 100%);
+    border:1.5px solid #E4B8C2;border-radius:16px;
+    padding:32px;text-align:center;margin-top:24px;
+  }
+  .message-box .icon{font-size:32px;margin-bottom:12px}
+  .message-box h3{font-size:18px;font-weight:700;color:#C47A8A;margin-bottom:12px;line-height:1.6}
+  .message-box p{font-size:14px;color:#3D3530;line-height:2}
+
+  /* ページ番号 */
+  .page-num{
+    position:absolute;bottom:28px;right:48px;
+    font-size:11px;color:#B5A48B;
+  }
+
+  @media print{
+    body{background:#fff}
+    .page{box-shadow:none;margin:0}
+  }
+  @media screen{
+    .page{box-shadow:0 2px 20px rgba(0,0,0,.1);margin:20px auto}
+  }
+</style>
+</head>
+<body>
+
+<!-- ======== Page 1: 表紙 ======== -->
+<div class="page cover">
+  <div class="cover-badge">SPECIAL GIFT</div>
+  <h1>自分の軸で、<br><em>自分の人生をつくる</em><br>90のワーク</h1>
+  <div class="subtitle">
+    1日1つ、自分への問いかけと小さなアクション。<br>
+    自分のペースで進めて、3ヶ月後には<br>
+    「自分で選んだ人生を生きている」と感じられる自分に。
+  </div>
+  <div class="cover-phases">
+    <div class="cover-phase">
+      <div class="num">🔍</div>
+      <div class="label">Phase 1</div>
+      <div class="desc">知る<br>自分の軸を<br>見つける</div>
+    </div>
+    <div class="cover-phase">
+      <div class="num">🎯</div>
+      <div class="label">Phase 2</div>
+      <div class="desc">選ぶ<br>自分の基準で<br>決める</div>
+    </div>
+    <div class="cover-phase">
+      <div class="num">🌿</div>
+      <div class="label">Phase 3</div>
+      <div class="desc">つくる<br>自分の人生を<br>デザインする</div>
+    </div>
+  </div>
+  <div class="cover-footer">ご利用ガイド</div>
+</div>
+
+<!-- ======== Page 2: このプログラムについて ======== -->
+<div class="page">
+  <div class="inner">
+    <div class="page-title">この<em>プログラム</em>について</div>
+    <div class="page-subtitle">
+      「気づいたら、誰かの期待に合わせて生きていた」<br>
+      「自分が本当にどうしたいのか、よくわからない」<br>
+      そんなあなたのためのプログラムです。
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">💡</span>90のワークでやること</h3>
+      <p>
+        毎日1つの「問いかけ」に答えて、1つの小さな「アクション」をやってみる。<br>
+        それだけです。<br><br>
+        難しいことは何もありません。<br>
+        問いかけに正解はないし、アクションは小さなことばかり。<br>
+        「一行でもOK」「何でも大丈夫」がこのプログラムのルールです。
+      </p>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">🌸</span>こんな方に</h3>
+      <ul>
+        <li>自分の意見を聞かれると「何でもいいよ」と言ってしまう</li>
+        <li>周りに合わせすぎて、自分が何がしたいかわからなくなった</li>
+        <li>「このままでいいのかな」と漠然と感じている</li>
+        <li>自分のことを後回しにしがち</li>
+        <li>もっと自分らしく生きたいと思っている</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3><span class="icon">✨</span>90ワーク後のあなた</h3>
+      <ul>
+        <li>自分の「好き」「大事なこと」「強み」がわかっている</li>
+        <li>迷った時に、自分の基準で選べるようになっている</li>
+        <li>「自分で選んだ人生を生きている」と感じられるようになっている</li>
+      </ul>
+    </div>
+  </div>
+  <div class="page-num">2</div>
+</div>
+
+<!-- ======== Page 3: 3つのPhase ======== -->
+<div class="page">
+  <div class="inner">
+    <div class="page-title">3つの<em>Phase</em>で変わっていく</div>
+    <div class="page-subtitle">
+      90のワークは3つのフェーズに分かれています。<br>
+      順番に進めると、自然とステップアップしていく設計です。
+    </div>
+
+    <div class="phase-row">
+      <div class="phase-box">
+        <div class="phase-num p1">1</div>
+        <div class="phase-name">知る</div>
+        <div class="phase-sub">ワーク 1〜30</div>
+        <div class="phase-desc">
+          自分の「好き」「嫌い」「価値観」「強み」を掘り起こす。<br><br>
+          「私ってこういう人だったんだ」という発見が積み重なって、自分だけの「軸」が見えてきます。
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-row">
+      <div class="phase-box">
+        <div class="phase-num p2">2</div>
+        <div class="phase-name">選ぶ</div>
+        <div class="phase-sub">ワーク 31〜60</div>
+        <div class="phase-desc">
+          見つけた「自分の軸」を使って、日常の選択を自分で決める練習。<br><br>
+          「どっちでもいい」を卒業して、「私はこれがいい」と言えるようになっていきます。
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-row">
+      <div class="phase-box">
+        <div class="phase-num p3">3</div>
+        <div class="phase-name">つくる</div>
+        <div class="phase-sub">ワーク 61〜90</div>
+        <div class="phase-desc">
+          時間の使い方、人間関係、暮らし方を自分でデザインする。<br><br>
+          「自分で選んだ人生を生きている」という実感が、日常になっていきます。
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num">3</div>
+</div>
+
+<!-- ======== Page 4: 使い方 ======== -->
+<div class="page">
+  <div class="inner">
+    <div class="page-title"><em>使い方</em>はとてもシンプル</div>
+    <div class="page-subtitle">
+      スマホで開いて、自分のペースで進めるだけ。
+    </div>
+
+    <div class="step">
+      <div class="step-circle">1</div>
+      <div class="step-body">
+        <h4>下のURLにアクセスして「はじめる」をタップ</h4>
+        <p>スマホでもパソコンでもOK。アプリのインストールは不要です。</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-circle">2</div>
+      <div class="step-body">
+        <h4>好きなワークを選んで開く</h4>
+        <p>順番通りに進めるのがおすすめですが、気になるワークからやってもOK。<br>「次のワーク」ボタンで順番に進めることもできます。</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-circle">3</div>
+      <div class="step-body">
+        <h4>問いかけに答えて、アクションをやってみる</h4>
+        <p>一行でもOK。思いついたまま書いてください。<br>アクションは「今日やってみよう」くらいの小さなことです。</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-circle">4</div>
+      <div class="step-body">
+        <h4>「記録を保存する」をタップ</h4>
+        <p>保存した記録は「わたしの成長」タブでグラフになります。<br>振り返ると、自分の変化が目に見えてわかります。</p>
+      </div>
+    </div>
+
+    <div class="qr-area">
+      <div class="qr-placeholder">ここにQRコードを<br>貼り付けてください</div>
+      <div class="qr-url">https://5555lirio.github.io/90day-program/</div>
+      <div class="qr-note">スマホのカメラでQRコードを読み取るか、URLを直接入力してください</div>
+    </div>
+  </div>
+  <div class="page-num">4</div>
+</div>
+
+<!-- ======== Page 5: コツ＆メッセージ ======== -->
+<div class="page">
+  <div class="inner">
+    <div class="page-title">効果を出す<em>5つのコツ</em></div>
+    <div class="page-subtitle">
+      完璧にやらなくて大丈夫。この5つだけ意識してみてください。
+    </div>
+
+    <div class="card" style="margin-bottom:24px">
+      <div class="tip">
+        <div class="tip-icon">📝</div>
+        <div class="tip-body">
+          <h4>正直に書く</h4>
+          <p>誰にも見せなくていい記録です。カッコつけなくていい。正直な言葉ほど、後で読み返した時に力になります。</p>
+        </div>
+      </div>
+      <div class="tip">
+        <div class="tip-icon">🎯</div>
+        <div class="tip-body">
+          <h4>アクションをやってみる</h4>
+          <p>考えるだけと、実際にやってみるのでは全然違います。小さくていいから、今日1つやってみてください。</p>
+        </div>
+      </div>
+      <div class="tip">
+        <div class="tip-icon">📈</div>
+        <div class="tip-body">
+          <h4>「わたしの成長」を見返す</h4>
+          <p>スコアの推移グラフや達成数を見ると「ちゃんと進んでる」と実感できます。モチベーションが落ちた時こそ見返してみて。</p>
+        </div>
+      </div>
+      <div class="tip">
+        <div class="tip-icon">🔄</div>
+        <div class="tip-body">
+          <h4>サボっても大丈夫。また戻ればいい</h4>
+          <p>日付に縛られないプログラムです。1日休んでも、1週間空いても、また開いて次のワークをやればOK。</p>
+        </div>
+      </div>
+      <div class="tip">
+        <div class="tip-icon">🌸</div>
+        <div class="tip-body">
+          <h4>過去の記録を読み返す</h4>
+          <p>10ワーク、30ワークと進んだ頃に最初の記録を読み返してみてください。「こんなこと書いてたんだ」という驚きが、成長の証拠です。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="message-box">
+      <div class="icon">🌿</div>
+      <h3>自分の人生は、自分でつくれる。</h3>
+      <p>
+        大きな変化は、小さな一歩の積み重ねから。<br>
+        このプログラムが、あなたの「自分らしい人生」の<br>
+        きっかけになりますように。
+      </p>
+    </div>
+  </div>
+  <div class="page-num">5</div>
+</div>
+
+</body>
+</html>
