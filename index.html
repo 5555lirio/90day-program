@@ -1,0 +1,1672 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>90日プログラム</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#FAF7F4;--card:#FFF;--primary:#8B7355;--primary-light:#B5A48B;
+    --primary-dark:#6B5740;--accent:#C4956A;--text:#3D3530;--text-light:#7A6F66;
+    --border:#E8E0D8;--shadow:0 2px 16px rgba(59,46,37,.07);--radius:14px;
+    --green:#C47A8A;--green-bg:#FDF0F3;
+    --warm:#E8A87C;--warm-bg:#FDF6F0;
+  }
+  body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);line-height:1.8;-webkit-tap-highlight-color:transparent;min-height:100vh}
+  .app{max-width:640px;margin:0 auto;padding:0 16px 80px}
+
+  /* ヘッダー */
+  .header{text-align:center;padding:40px 16px 20px}
+  .header h1{font-size:22px;font-weight:700;line-height:1.5;margin-bottom:4px}
+  .header h1 em{font-style:normal;color:var(--accent)}
+  .header .sub{font-size:13px;color:var(--text-light)}
+
+  /* 進捗バー */
+  .progress-area{margin:20px 0 28px}
+  .progress-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+  .progress-day{font-size:28px;font-weight:700;color:var(--accent)}
+  .progress-phase{font-size:12px;font-weight:600;color:var(--primary-light);background:var(--bg);border:1px solid var(--border);padding:3px 12px;border-radius:20px}
+  .progress-bar-wrap{height:6px;background:var(--border);border-radius:6px;overflow:hidden}
+  .progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),#D4A574);border-radius:6px;transition:width .5s}
+  .progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--text-light);margin-top:6px}
+
+  /* 今日のテーマ */
+  .theme-card{background:linear-gradient(135deg,#F5EDE4 0%,#FAF7F4 100%);border-radius:var(--radius);padding:24px;margin-bottom:16px;text-align:center}
+  .theme-label{font-size:12px;font-weight:600;color:var(--primary-light);letter-spacing:.1em;margin-bottom:8px}
+  .theme-text{font-size:17px;font-weight:600;line-height:1.7;color:var(--text)}
+  .theme-desc{font-size:14px;color:var(--text-light);margin-top:8px;line-height:1.8}
+
+  /* セクション */
+  .section{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px 22px;margin-bottom:16px}
+  .section h3{font-size:14px;font-weight:600;color:var(--primary);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+  .section h3 .icon{font-size:18px}
+  .section p{font-size:14px;line-height:2;color:var(--text)}
+
+  /* テキストエリア */
+  .journal-area{width:100%;min-height:100px;padding:14px 16px;border:1.5px solid var(--border);border-radius:10px;font-family:inherit;font-size:14px;line-height:1.8;color:var(--text);background:var(--bg);resize:vertical;outline:none;transition:.2s}
+  .journal-area:focus{border-color:var(--accent)}
+  .journal-area::placeholder{color:var(--primary-light)}
+  .journal-label{font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px;display:block}
+  .journal-hint{font-size:12px;color:var(--text-light);margin-bottom:10px;line-height:1.6}
+  .journal-group{margin-bottom:20px}
+  .journal-group:last-child{margin-bottom:0}
+
+  /* 5段階 */
+  .scale-wrap{margin-bottom:20px}
+  .scale-label{font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;display:block}
+  .scale-options{display:flex;justify-content:space-between;gap:4px}
+  .scale-btn{flex:1;padding:12px 4px;border:2px solid var(--border);border-radius:10px;background:var(--card);cursor:pointer;text-align:center;font-family:inherit;transition:.2s}
+  .scale-btn:hover{border-color:var(--primary-light)}
+  .scale-btn.selected{border-color:var(--accent);background:var(--accent);color:#fff}
+  .scale-num{font-size:18px;font-weight:700;display:block}
+  .scale-text{font-size:10px;display:block;margin-top:2px}
+
+  /* ミッション */
+  .mission-box{background:var(--green-bg);border:1.5px solid #E4B8C2;border-radius:12px;padding:20px}
+  .mission-title{font-size:13px;font-weight:700;color:var(--green);margin-bottom:8px}
+  .mission-text{font-size:15px;font-weight:600;color:#8B4A5A;line-height:1.7;margin-bottom:8px}
+  .mission-desc{font-size:13px;color:var(--text-light);line-height:1.7}
+  .mission-check{display:flex;align-items:center;gap:10px;margin-top:14px;padding-top:12px;border-top:1px solid #E4B8C2;cursor:pointer}
+  .mission-checkbox{width:22px;height:22px;border:2px solid #D4A0B0;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:.2s;flex-shrink:0}
+  .mission-checkbox.checked{background:var(--green);border-color:var(--green)}
+  .mission-checkbox.checked::after{content:'\2713';color:#fff;font-size:14px;font-weight:700}
+  .mission-check span{font-size:14px;color:var(--text)}
+
+  /* 保存ボタン */
+  .save-btn{display:block;width:100%;background:var(--primary);color:#fff;font-family:inherit;font-size:16px;font-weight:600;border:none;border-radius:40px;padding:16px;cursor:pointer;transition:.3s;letter-spacing:.05em;margin-top:8px}
+  .save-btn:hover{background:var(--primary-dark)}
+  .save-btn:active{transform:scale(.98)}
+  .saved-msg{text-align:center;font-size:14px;color:var(--green);font-weight:600;margin-top:12px;display:none}
+  .saved-msg.show{display:block;animation:fadeIn .3s ease}
+
+  /* 褒めカード */
+  .praise-card{background:linear-gradient(135deg,#FDF6F0 0%,#FAF0E6 100%);border:1.5px solid #E8CDB5;border-radius:var(--radius);padding:28px 24px;margin-bottom:16px;text-align:center}
+  .praise-icon{font-size:36px;margin-bottom:12px}
+  .praise-title{font-size:18px;font-weight:700;color:var(--accent);margin-bottom:8px;line-height:1.6}
+  .praise-text{font-size:14px;color:var(--text);line-height:2}
+  .praise-stat{display:inline-block;background:var(--card);border-radius:10px;padding:8px 16px;margin:12px 4px 0;font-size:13px;color:var(--primary);font-weight:600;box-shadow:var(--shadow)}
+
+  /* 成長グラフ */
+  .growth-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px 22px;margin-bottom:16px}
+  .growth-card h3{font-size:14px;font-weight:600;color:var(--primary);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+  .growth-chart{display:flex;align-items:flex-end;gap:6px;height:120px;padding:0 4px}
+  .growth-bar{flex:1;background:var(--border);border-radius:4px 4px 0 0;min-height:4px;transition:height .5s;position:relative}
+  .growth-bar.filled{background:linear-gradient(180deg,var(--accent),#D4A574)}
+  .growth-bar.today{background:linear-gradient(180deg,var(--warm),#E8A87C)}
+  .growth-bar-label{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--text-light);white-space:nowrap}
+  .growth-legend{display:flex;justify-content:center;gap:16px;margin-top:28px;font-size:12px;color:var(--text-light)}
+  .growth-legend span::before{content:'';display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:middle}
+  .growth-legend .leg-past::before{background:var(--accent)}
+  .growth-legend .leg-today::before{background:var(--warm)}
+
+  /* 過去ログ */
+  .log-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-bottom:12px}
+  .log-date{font-size:13px;font-weight:600;color:var(--accent);margin-bottom:8px}
+  .log-q{font-size:12px;color:var(--text-light);margin-bottom:2px}
+  .log-a{font-size:14px;color:var(--text);margin-bottom:12px;line-height:1.8}
+  .log-scale{display:inline-block;font-size:12px;background:var(--bg);padding:2px 10px;border-radius:10px;color:var(--text-light);margin-bottom:4px}
+  .log-mission{font-size:13px;color:var(--green);margin-top:4px}
+
+  /* タブ */
+  .tab-bar{display:flex;gap:0;margin:0 0 20px;border-bottom:1.5px solid var(--border)}
+  .tab{flex:1;padding:12px 8px;font-size:14px;font-weight:500;text-align:center;color:var(--text-light);cursor:pointer;border-bottom:2px solid transparent;transition:.2s}
+  .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+  .empty{text-align:center;padding:40px 20px;color:var(--text-light);font-size:14px}
+
+  /* ワーク一覧 */
+  .phase-section{margin-bottom:24px}
+  .phase-title{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px;padding:4px 0;letter-spacing:.05em}
+  .day-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+  .day-cell{position:relative;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--card);border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:.2s;font-family:inherit}
+  .day-cell:hover{border-color:var(--primary-light);transform:translateY(-1px)}
+  .day-cell .day-num{font-size:13px;font-weight:700;color:var(--text)}
+  .day-cell .day-theme{font-size:8px;color:var(--text-light);text-align:center;line-height:1.3;margin-top:2px;padding:0 2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .day-cell.done{background:var(--green-bg);border-color:#E4B8C2}
+  .day-cell.done .day-num{color:var(--green)}
+  .day-cell.done::after{content:'\2713';position:absolute;top:3px;right:5px;font-size:10px;color:var(--green);font-weight:700}
+  .day-cell.current{border-color:var(--accent);box-shadow:0 0 0 2px rgba(196,149,106,.2)}
+  .back-to-list{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text-light);cursor:pointer;padding:8px 0;margin-bottom:8px;background:none;border:none;font-family:inherit;transition:.2s}
+  .back-to-list:hover{color:var(--text)}
+
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @media(max-width:480px){
+    .header h1{font-size:20px}
+    .progress-day{font-size:24px}
+    .scale-text{font-size:9px}
+    .day-grid{grid-template-columns:repeat(5,1fr);gap:6px}
+    .day-cell .day-theme{font-size:7px}
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<script>
+// ============================================================
+// プログラムデータ（全90日）
+// ============================================================
+const program = [
+  {
+    day:1, phase:'Phase 1：知る',
+    theme:'「私はどうしたい？」から始める',
+    desc:'今日から90日、自分の人生を自分でつくっていく旅が始まります。\nまずは「今の私」をそのまま記録するところから。',
+    question:{id:'q1', label:'90日後、どんな自分になっていたら嬉しいですか？', hint:'ぼんやりでOK。「こうなれたらいいな」くらいの感覚で'},
+    scale:{id:'s1', label:'今「自分の人生を自分で作っている」という実感はどのくらい？', low:'ほとんどない', high:'かなりある'},
+    mission:{
+      text:'今日、何か1つ「自分で選ぶ」をやってみる',
+      desc:'ご飯のメニュー、帰り道、テレビのチャンネル。何でもいい。「誰かに合わせる」じゃなく「私がこれがいい」で選ぶ。それだけで十分です。'
+    }
+  },
+  {
+    day:2, phase:'Phase 1：知る',
+    theme:'自分の「好き」を思い出す',
+    desc:'日々の忙しさの中で、自分の「好き」を忘れていませんか？\n今日は、あなたの「好き」を思い出す日です。',
+    question:{id:'q1', label:'最近「これ好きだな」と感じたことは何ですか？', hint:'食べ物、場所、時間帯、香り…何でもOK'},
+    scale:{id:'s1', label:'自分の「好き」をどのくらい把握できていますか？', low:'あまり分からない', high:'よく分かっている'},
+    mission:{
+      text:'今日、1つ「好き」を味わう時間をつくる',
+      desc:'好きな飲み物をゆっくり飲む、好きな曲を聴く、好きな景色を見る。ほんの数分でいいので、「好き」を感じる時間を自分にプレゼントしてみてください。'
+    }
+  },
+  {
+    day:3, phase:'Phase 1：知る',
+    theme:'自分の「嫌い」も大事な手がかり',
+    desc:'「嫌い」「苦手」と感じることにも、大切なヒントが隠れています。\n自分の気持ちに正直になってみましょう。',
+    question:{id:'q1', label:'「これは苦手だな」「嫌だな」と感じることは何ですか？', hint:'人に言いにくいことでも大丈夫。正直に書いてみて'},
+    scale:{id:'s1', label:'自分の「嫌い」を認められていますか？', low:'つい我慢してしまう', high:'ちゃんと認められている'},
+    mission:{
+      text:'今日、1つ「嫌だな」と思ったことを心の中で認める',
+      desc:'「あ、私これ嫌なんだな」と気づくだけでOK。我慢しなくていいし、変えなくてもいい。まずは気づくことが第一歩です。'
+    }
+  },
+  {
+    day:4, phase:'Phase 1：知る',
+    theme:'子どもの頃、何が楽しかった？',
+    desc:'子どもの頃の「楽しい」には、あなたの本質が詰まっています。\n大人のフィルターを外して、思い出してみましょう。',
+    question:{id:'q1', label:'子どもの頃、時間を忘れて夢中になったことは何ですか？', hint:'遊び、場所、誰かと一緒にしたこと…何でも'},
+    scale:{id:'s1', label:'子どもの頃の自分と今の自分、つながりを感じますか？', low:'全然違う気がする', high:'つながっている'},
+    mission:{
+      text:'子どもの頃に好きだったことを1つやってみる（またはそれに近いこと）',
+      desc:'絵を描く、外を歩く、何かを集める、歌う。完璧にやらなくていい。「あの頃こんなことが好きだったな」と思い出しながら、ちょっとだけやってみてください。'
+    }
+  },
+  {
+    day:5, phase:'Phase 1：知る',
+    theme:'時間を忘れるほど夢中になれること',
+    desc:'「気づいたらこんな時間！」という経験はありますか？\nそれが、あなたの本当の興味のある場所です。',
+    question:{id:'q1', label:'最近、時間を忘れるくらい集中できたことはありますか？', hint:'料理、読書、DIY、おしゃべり…何でもOK'},
+    scale:{id:'s1', label:'日常の中で「夢中になれる時間」はどのくらいありますか？', low:'ほとんどない', high:'けっこうある'},
+    mission:{
+      text:'今日、15分だけ「好きなこと」に集中する時間をつくる',
+      desc:'スマホを置いて、自分が好きなことだけに15分。短くてOK。「自分のための時間」を意識的につくることが大事です。'
+    }
+  },
+  {
+    day:6, phase:'Phase 1：知る',
+    theme:'「ありがとう」と言われて嬉しかったこと',
+    desc:'誰かに感謝された時、特に嬉しかった経験はありますか？\nそこにあなたの「強み」や「大切にしていること」が隠れています。',
+    question:{id:'q1', label:'「ありがとう」と言われて、特に嬉しかった場面を教えてください', hint:'最近のことでも、昔のことでもOK'},
+    scale:{id:'s1', label:'自分が誰かの役に立っている実感はありますか？', low:'あまり感じない', high:'よく感じる'},
+    mission:{
+      text:'今日、誰かに「ありがとう」を伝えてみる',
+      desc:'家族、友人、お店の人、誰でもOK。「ありがとう」を意識的に口に出してみてください。言った自分も温かい気持ちになれます。'
+    }
+  },
+  {
+    day:7, phase:'Phase 1：知る',
+    theme:'1週間の自分を振り返る',
+    desc:'最初の1週間おつかれさまでした！\n6日間で書いたこと、気づいたことを振り返ってみましょう。',
+    question:{id:'q1', label:'この1週間で、自分について新しく気づいたことはありますか？', hint:'小さなことでOK。「こう思っていたんだ」という発見でも'},
+    scale:{id:'s1', label:'この1週間、自分と向き合えた実感はありますか？', low:'あまり感じない', high:'しっかり向き合えた'},
+    mission:{
+      text:'この1週間の自分に「よくやったね」と声をかける',
+      desc:'声に出しても、心の中でもOK。1週間続けたこと、それだけで十分すごいことです。自分を褒める練習を始めましょう。'
+    }
+  },
+  {
+    day:8, phase:'Phase 1：知る',
+    theme:'絶対に譲れないことは何？',
+    desc:'今週からは、自分の「価値観」を探っていきます。\nまずは「これだけは譲れない」というものを見つけてみましょう。',
+    question:{id:'q1', label:'あなたにとって「これだけは絶対に譲れない」と思うことは何ですか？', hint:'正解はないです。直感で浮かんだものを書いてみて'},
+    scale:{id:'s1', label:'自分の「譲れないもの」を普段どのくらい大事にできていますか？', low:'つい後回しにしがち', high:'ちゃんと大事にできている'},
+    mission:{
+      text:'今日、自分の「譲れないこと」を1つ大事にする行動をとる',
+      desc:'家族との時間が譲れないなら、5分でもスマホを置いて向き合う。健康が大事なら、1杯の水を丁寧に飲む。小さなことでOKです。'
+    }
+  },
+  {
+    day:9, phase:'Phase 1：知る',
+    theme:'「こういう人になりたい」と思う人',
+    desc:'憧れる人や素敵だなと思う人には、あなたが大事にしたい価値観が映っています。',
+    question:{id:'q1', label:'「こういう人になりたいな」と思う人はいますか？どんなところに惹かれますか？', hint:'有名人でも身近な人でもOK。その人のどこが好き？'},
+    scale:{id:'s1', label:'理想の自分に向かって進んでいる感覚はありますか？', low:'まだよく分からない', high:'少しずつ近づいている'},
+    mission:{
+      text:'憧れの人の「素敵だな」と思うところを1つ真似してみる',
+      desc:'笑顔、話し方、姿勢、考え方。何でもいい。完璧に真似しなくていいので、「ちょっとだけ意識してみる」くらいで十分です。'
+    }
+  },
+  {
+    day:10, phase:'Phase 1：知る',
+    theme:'お金と時間があったら何をする？',
+    desc:'制限を外して考えてみると、本当にやりたいことが見えてきます。\n「無理だから」は一旦置いて、自由に想像してみましょう。',
+    question:{id:'q1', label:'もしお金も時間も十分にあったら、何をしたいですか？', hint:'現実的じゃなくてOK。夢みたいなことも書いてみて'},
+    scale:{id:'s1', label:'自分の「やりたいこと」に正直になれていますか？', low:'つい諦めてしまう', high:'正直になれている'},
+    mission:{
+      text:'「やりたいことリスト」に1つ追加する',
+      desc:'スマホのメモでもノートでもOK。「いつかやりたいこと」を1つだけ書いてみてください。書くだけで、夢が少し近づきます。'
+    }
+  },
+  {
+    day:11, phase:'Phase 1：知る',
+    theme:'怒りを感じる時、何が大事にされていない？',
+    desc:'怒りやイライラの裏には「大事にしたいのに大事にされていないもの」が隠れています。\n感情のサインに耳を傾けてみましょう。',
+    question:{id:'q1', label:'最近イラッとしたことは何ですか？その裏にある「大事にしたいこと」は何だと思いますか？', hint:'怒りは悪いものじゃない。大事なものを教えてくれるサイン'},
+    scale:{id:'s1', label:'自分の感情に気づけていますか？', low:'気づかないことが多い', high:'よく気づけている'},
+    mission:{
+      text:'今日、イラッとした時に「何が大事にされてないんだろう？」と自分に聞いてみる',
+      desc:'怒りを感じたら、それを否定しないで「何が嫌だったんだろう？」と問いかけてみてください。感情は、自分を知るための大切な手がかりです。'
+    }
+  },
+  {
+    day:12, phase:'Phase 1：知る',
+    theme:'「幸せだな」と感じる瞬間',
+    desc:'大きな幸せじゃなくていい。\n日常の中の小さな「幸せだな」を集めてみましょう。',
+    question:{id:'q1', label:'最近「あ、幸せだな」と感じた瞬間を教えてください', hint:'温かいお茶を飲んだ時、子どもの寝顔を見た時…何でもOK'},
+    scale:{id:'s1', label:'日常の中で「幸せだな」と感じる瞬間に気づけていますか？', low:'見逃しがち', high:'よく気づけている'},
+    mission:{
+      text:'今日、「幸せだな」と感じた瞬間を3つ見つける',
+      desc:'大きなことじゃなくていい。空がきれい、ごはんがおいしい、布団が気持ちいい。小さな幸せに気づく力は、練習で育ちます。'
+    }
+  },
+  {
+    day:13, phase:'Phase 1：知る',
+    theme:'自分の中の「当たり前」を疑ってみる',
+    desc:'「こうすべき」「こうあるべき」と思い込んでいること、ありませんか？\nそれは本当に自分の考え？誰かの基準？',
+    question:{id:'q1', label:'「こうしなきゃ」と思っていることで、実は自分の本心じゃないかもしれないことはありますか？', hint:'家事の仕方、仕事のやり方、人付き合い…何でも'},
+    scale:{id:'s1', label:'自分の「思い込み」に気づけていますか？', low:'気づけていない', high:'けっこう気づけている'},
+    mission:{
+      text:'今日、1つ「これって本当に私がやりたいこと？」と問いかけてみる',
+      desc:'いつもやっていること、いつもの習慣。1つだけ「これって誰のため？」と聞いてみてください。答えが出なくてもOK。問いかけることに意味があります。'
+    }
+  },
+  {
+    day:14, phase:'Phase 1：知る',
+    theme:'2週間の発見を振り返る',
+    desc:'2週間おつかれさまでした！\nたくさんの問いかけの中で、見えてきたものがあるはずです。',
+    question:{id:'q1', label:'この2週間で「自分ってこうなんだ」と気づいたことで、一番印象に残っていることは？', hint:'小さな気づきでもOK。何が心に残っている？'},
+    scale:{id:'s1', label:'自分の価値観が少し見えてきた感覚はありますか？', low:'まだぼんやり', high:'だいぶ見えてきた'},
+    mission:{
+      text:'Day 1〜13の記録を読み返して、気づいたことをメモする',
+      desc:'「記録」タブから過去の自分を読み返してみてください。「あ、こんなこと書いてたんだ」という発見があるかもしれません。'
+    }
+  },
+  {
+    day:15, phase:'Phase 1：知る',
+    theme:'人からよく頼まれること',
+    desc:'今週からは、自分の「強み」を見つけていきます。\n人から頼まれることには、あなたの強みが隠れています。',
+    question:{id:'q1', label:'人からよく頼まれること、相談されることは何ですか？', hint:'「聞いてほしい」「手伝ってほしい」「教えてほしい」など'},
+    scale:{id:'s1', label:'自分の強みをどのくらい自覚できていますか？', low:'よく分からない', high:'だいたい分かっている'},
+    mission:{
+      text:'今日、誰かに頼まれたことがあったら「これが私の強みかも」と考えてみる',
+      desc:'頼まれなくても、自然と「これやっておくね」と引き受けていることでもOK。あなたが当たり前にやっていることが、実は誰かにとってはすごく助かっていることかもしれません。'
+    }
+  },
+  {
+    day:16, phase:'Phase 1：知る',
+    theme:'頑張らなくてもできること',
+    desc:'努力しなくても自然にできること。それこそが、あなたの本当の強みです。',
+    question:{id:'q1', label:'頑張っている感覚なしに、スムーズにできることは何ですか？', hint:'料理、整理整頓、人の話を聞く、気配り…何でも'},
+    scale:{id:'s1', label:'自分の「自然にできること」に価値を感じていますか？', low:'当たり前すぎて価値を感じない', high:'ちゃんと認められている'},
+    mission:{
+      text:'今日、自分が自然にできたことを1つ見つけて「これ、私の強みだな」と認める',
+      desc:'「誰でもできるでしょ」と思わないで。あなたが楽にできることは、他の誰かにとっては難しいことかもしれません。'
+    }
+  },
+  {
+    day:17, phase:'Phase 1：知る',
+    theme:'「すごいね」と言われるけど自分では普通なこと',
+    desc:'褒められても「いやいや、そんなことないよ」って流していませんか？\nその「そんなことない」に、宝物が隠れています。',
+    question:{id:'q1', label:'人から褒められるけど「そんなことないよ」と思うことは何ですか？', hint:'謙遜しなくて大丈夫。素直に書いてみて'},
+    scale:{id:'s1', label:'人からの褒め言葉を素直に受け取れていますか？', low:'つい否定してしまう', high:'素直に受け取れる'},
+    mission:{
+      text:'今日、誰かに褒められたら「ありがとう」とだけ返してみる',
+      desc:'「いやいや」「そんなことないよ」は封印。「ありがとう」の一言だけ。最初は恥ずかしくても大丈夫。褒め言葉を受け取る練習です。'
+    }
+  },
+  {
+    day:18, phase:'Phase 1：知る',
+    theme:'失敗から学んだこと',
+    desc:'失敗は「ダメだった」で終わりじゃない。\nその経験から得たものは、あなただけの強みになっています。',
+    question:{id:'q1', label:'過去の失敗から学んだこと、身についたことは何ですか？', hint:'つらかった経験でも、今の自分をつくっているもの'},
+    scale:{id:'s1', label:'過去の経験を「自分の財産」として捉えられていますか？', low:'後悔が多い', high:'財産だと思える'},
+    mission:{
+      text:'過去の失敗を1つ思い出して「あの経験のおかげで今の私がいる」と言ってみる',
+      desc:'つらかったことも、あなたを強くしてくれた経験。声に出しても心の中でもいいので、過去の自分に「頑張ったね」と伝えてみてください。'
+    }
+  },
+  {
+    day:19, phase:'Phase 1：知る',
+    theme:'困っている人を見ると何をしたくなる？',
+    desc:'誰かが困っている時、あなたがとっさにやりたくなること。\nそこに、あなたの「役割」や「使命」のヒントがあります。',
+    question:{id:'q1', label:'困っている人を見た時、最初にしたくなることは何ですか？', hint:'話を聞く、一緒に考える、何か作る、調べる…何でもOK'},
+    scale:{id:'s1', label:'自分の「人の役に立ちたい気持ち」を大事にできていますか？', low:'自分のことで精一杯', high:'大事にできている'},
+    mission:{
+      text:'今日、誰かのために「小さな親切」を1つする',
+      desc:'ドアを押さえてあげる、笑顔で挨拶する、「大丈夫？」と声をかける。大きなことじゃなくていい。あなたの優しさを、1つ表現してみてください。'
+    }
+  },
+  {
+    day:20, phase:'Phase 1：知る',
+    theme:'自分の強みを3つ書いてみる',
+    desc:'この1週間で見つけた「強み」をまとめてみましょう。\n自信がなくても大丈夫。書いてみることが大事です。',
+    question:{id:'q1', label:'ここまでのワークを踏まえて、自分の強みを3つ書いてみてください', hint:'「○○なところ」という形でOK。完璧じゃなくていい'},
+    scale:{id:'s1', label:'自分の強みを認められるようになってきましたか？', low:'まだ抵抗がある', high:'認められるようになった'},
+    mission:{
+      text:'自分の強みを1つ、誰かに伝えてみる（または心の中で宣言する）',
+      desc:'「私って○○なところがあるんだよね」と誰かに話してもいいし、鏡の前で自分に言ってもいい。強みを言葉にすると、どんどん本物になっていきます。'
+    }
+  },
+  {
+    day:21, phase:'Phase 1：知る',
+    theme:'3週間の自分を振り返る',
+    desc:'3週間おつかれさまでした！\n「好き」「価値観」「強み」と、自分の輪郭がだんだん見えてきたはずです。',
+    question:{id:'q1', label:'3週間前の自分と今の自分、何か変わったと感じることはありますか？', hint:'考え方、行動、気持ち…どんな変化でもOK'},
+    scale:{id:'s1', label:'自分のことが分かってきた実感はありますか？', low:'まだぼんやり', high:'かなり見えてきた'},
+    mission:{
+      text:'3週間続けた自分を、思いきり褒める',
+      desc:'「3週間も自分と向き合い続けた」って、すごいことです。好きなおやつを買う、ゆっくりお風呂に入る、何でもいいので自分にご褒美をあげてください。'
+    }
+  },
+  {
+    day:22, phase:'Phase 1：知る',
+    theme:'「私が大事にしたいこと」ベスト3',
+    desc:'ここからは、見つけたものをまとめていくフェーズです。\nまずは「大事にしたいこと」を整理してみましょう。',
+    question:{id:'q1', label:'あなたが人生で大事にしたいこと、ベスト3を挙げてみてください', hint:'家族、健康、自由、誠実さ…自分の言葉で書いてみて'},
+    scale:{id:'s1', label:'大事にしたいことを、日々の中でどのくらい大事にできていますか？', low:'全然できていない', high:'しっかりできている'},
+    mission:{
+      text:'今日、大事にしたいことベスト3のうち1つを意識して過ごす',
+      desc:'「家族」なら家族との時間を少し丁寧に。「健康」なら体に良いものを1つ選ぶ。大事なことを「意識する」だけでも、日常が少し変わります。'
+    }
+  },
+  {
+    day:23, phase:'Phase 1：知る',
+    theme:'「こういう毎日を送りたい」理想の1日',
+    desc:'理想の1日をイメージしてみましょう。\n完璧じゃなくていい。「こんな感じだったらいいな」でOKです。',
+    question:{id:'q1', label:'あなたにとって理想の1日は、どんな1日ですか？朝から夜まで自由に描いてみてください', hint:'起きる時間、過ごし方、食べるもの…自由に想像して'},
+    scale:{id:'s1', label:'今の毎日は、理想の1日にどのくらい近いですか？', low:'かなり遠い', high:'けっこう近い'},
+    mission:{
+      text:'理想の1日の中から、1つだけ今日やってみる',
+      desc:'朝ゆっくりコーヒーを飲む、夜に本を読む、散歩する。理想の1日の中から、今日できる「1つ」を実行してみてください。'
+    }
+  },
+  {
+    day:24, phase:'Phase 1：知る',
+    theme:'「こういう人間関係がいい」理想の関係',
+    desc:'人間関係も、自分の軸で選んでいいんです。\n「こういう関係がいい」を言葉にしてみましょう。',
+    question:{id:'q1', label:'あなたにとって理想の人間関係はどんなものですか？', hint:'距離感、コミュニケーションの仕方、お互いの関わり方…'},
+    scale:{id:'s1', label:'今の人間関係に満足していますか？', low:'あまり満足していない', high:'とても満足している'},
+    mission:{
+      text:'大切な人に、今日「嬉しい」か「ありがとう」を伝える',
+      desc:'LINEでもいいし、直接でもいい。「今の関係が嬉しい」「いつもありがとう」。一言伝えるだけで、関係がほんの少し温かくなります。'
+    }
+  },
+  {
+    day:25, phase:'Phase 1：知る',
+    theme:'自分に合わないこと',
+    desc:'「合わないもの」を知ることも、自分を知ること。\n無理に合わせなくていいものを、はっきりさせてみましょう。',
+    question:{id:'q1', label:'「これは自分に合わないな」と感じること、環境、人間関係はありますか？', hint:'正直に書いてOK。合わないことは悪いことじゃない'},
+    scale:{id:'s1', label:'「自分に合わないこと」から距離を取れていますか？', low:'我慢して続けている', high:'うまく距離を取れている'},
+    mission:{
+      text:'今日、「合わないな」と感じたことに気づいて、自分に「無理しなくていいよ」と言う',
+      desc:'合わないことを無理に好きになる必要はありません。「合わないんだな、私は」と認めるだけで、心が少し楽になります。'
+    }
+  },
+  {
+    day:26, phase:'Phase 1：知る',
+    theme:'「私はこういう人」を一言で',
+    desc:'ここまで見つけてきた「好き」「価値観」「強み」。\nそれを一言にまとめてみましょう。',
+    question:{id:'q1', label:'「私はこういう人」を一言で表すとしたら？', hint:'キャッチフレーズみたいに。何度書き直してもOK'},
+    scale:{id:'s1', label:'自分を一言で表現できる自信はありますか？', low:'難しい', high:'けっこう言える'},
+    mission:{
+      text:'鏡を見て、自分に「私は○○な人」と声に出して言ってみる',
+      desc:'照れくさくても大丈夫。自分を自分の言葉で定義することは、とてもパワフルな行為です。今日の一言が、これからの指針になります。'
+    }
+  },
+  {
+    day:27, phase:'Phase 1：知る',
+    theme:'自分の軸を言葉にしてみる',
+    desc:'ここまでの30日近くの探求で見えてきたもの。\nそれが、あなたの「軸」です。言葉にしてみましょう。',
+    question:{id:'q1', label:'あなたの「軸」（大事にしたい考え方・生き方）を言葉にしてみてください', hint:'「私は○○を大切に生きていく」のような形でも。完璧じゃなくてOK'},
+    scale:{id:'s1', label:'自分の「軸」が見えてきた実感はありますか？', low:'まだぼんやり', high:'はっきり見えてきた'},
+    mission:{
+      text:'自分の「軸」を紙やメモに書き出して、見えるところに置く',
+      desc:'スマホの壁紙、冷蔵庫のメモ、手帳の1ページ目。どこでもいいので、自分の軸を目に入る場所に置いてみてください。'
+    }
+  },
+  {
+    day:28, phase:'Phase 1：知る',
+    theme:'Phase 1でいちばんの発見',
+    desc:'もうすぐPhase 1が終わります。\n約1ヶ月の中で、いちばん心に残っている発見は何ですか？',
+    question:{id:'q1', label:'Phase 1で一番大きな発見、一番心に残っていることは何ですか？', hint:'答え、気づき、感情の変化…何でも'},
+    scale:{id:'s1', label:'Phase 1を通して、自分への理解が深まりましたか？', low:'あまり変わらない', high:'とても深まった'},
+    mission:{
+      text:'Phase 1の一番の発見を、誰かに話してみる（または日記に書く）',
+      desc:'「最近こういうことに気づいたんだ」と誰かに話すと、気づきがもっと深まります。話す相手がいなければ、今日の記録に詳しく書いてみてください。'
+    }
+  },
+  {
+    day:29, phase:'Phase 1：知る',
+    theme:'30日前の自分に手紙を書くとしたら',
+    desc:'30日前、このプログラムを始めた時の自分。\nあの時の自分に、今の自分から何を伝えますか？',
+    question:{id:'q1', label:'30日前の自分に手紙を書くとしたら、何と伝えますか？', hint:'励ましでも、報告でも、何でもOK'},
+    scale:{id:'s1', label:'30日前と比べて、自分が変わった実感はありますか？', low:'あまり感じない', high:'すごく感じる'},
+    mission:{
+      text:'30日前の自分に向けて、短い手紙を書いてみる',
+      desc:'上の問いかけの答えが、そのまま手紙になります。30日前の自分に「大丈夫だよ」って伝えてあげてください。'
+    }
+  },
+  {
+    day:30, phase:'Phase 1：知る',
+    theme:'Phase 1 完了！自分の軸が見えてきた',
+    desc:'30日間おつかれさまでした！\n自分の軸を見つける旅、よく歩き切りました。明日からは「選ぶ」フェーズです。',
+    question:{id:'q1', label:'Phase 1を終えて、今の気持ちを自由に書いてください', hint:'嬉しい、不安、もっと知りたい…正直な気持ちを'},
+    scale:{id:'s1', label:'「自分の軸」が見えてきた実感はどのくらいですか？', low:'まだぼんやり', high:'はっきり見えた'},
+    mission:{
+      text:'Phase 1完了のお祝いをする',
+      desc:'好きなスイーツを食べる、ゆっくりお風呂に入る、何でもいい。30日間頑張った自分を、今日は思いきりお祝いしてあげてください。'
+    }
+  },
+  {
+    day:31, phase:'Phase 2：選ぶ',
+    theme:'今日から「選ぶ」フェーズ',
+    desc:'Phase 1で見つけた「自分の軸」を使って、今日から「自分で選ぶ」練習を始めます。\n小さなことから、少しずつ。',
+    question:{id:'q1', label:'Phase 1で見つけた自分の軸を、改めて書いてみてください。「選ぶ」時の基準にしていきます', hint:'Day 27で書いた内容をベースにしてもOK'},
+    scale:{id:'s1', label:'普段、自分で決めている実感はどのくらいありますか？', low:'人に合わせがち', high:'自分で決められている'},
+    mission:{
+      text:'今日の昼ごはんか夜ごはんを「自分の食べたいもの」で選ぶ',
+      desc:'家族の好みや冷蔵庫の中身は一旦置いて、「私は何が食べたい？」と自分に聞いてみてください。選ぶ練習の第一歩です。'
+    }
+  },
+  {
+    day:32, phase:'Phase 2：選ぶ',
+    theme:'「どっちでもいい」をやめてみる',
+    desc:'「どっちでもいいよ」「何でもいいよ」が口癖になっていませんか？\n今日から、自分の答えを持つ練習を始めましょう。',
+    question:{id:'q1', label:'普段「どっちでもいい」と言いがちな場面はどんな時ですか？', hint:'食事、予定、買い物…何でも'},
+    scale:{id:'s1', label:'「どっちでもいい」と言わずに自分の意見を言えていますか？', low:'つい言ってしまう', high:'ちゃんと選べている'},
+    mission:{
+      text:'今日、「どっちでもいい」と言いそうになったら「私は○○がいい」に変えてみる',
+      desc:'正解なんてありません。AでもBでもいい。大事なのは「自分で選んだ」という事実。間違ってもいいから、自分の答えを出してみてください。'
+    }
+  },
+  {
+    day:33, phase:'Phase 2：選ぶ',
+    theme:'「本当はどうしたい？」を口癖にする',
+    desc:'迷った時、モヤモヤした時。\n「本当はどうしたい？」と自分に聞く習慣をつけてみましょう。',
+    question:{id:'q1', label:'今、「本当はどうしたい？」と自分に聞いてみてください。浮かんだ答えは？', hint:'大きなことでも小さなことでも。最初に浮かんだものを'},
+    scale:{id:'s1', label:'自分の「本当の気持ち」にアクセスできていますか？', low:'よく分からない', high:'すぐに分かる'},
+    mission:{
+      text:'今日3回、「本当はどうしたい？」と自分に問いかけてみる',
+      desc:'朝の過ごし方、お昼の選択、夜の時間の使い方。何でもいいので3回、自分に聞いてみてください。答えが出なくても、聞くだけでOK。'
+    }
+  },
+  {
+    day:34, phase:'Phase 2：選ぶ',
+    theme:'誰かの意見を聞く前に、まず自分の答えを出す',
+    desc:'つい「みんなどう思う？」と先に聞いていませんか？\nまず自分の中に答えを持ってから、聞いてみましょう。',
+    question:{id:'q1', label:'最近、誰かの意見に左右されて自分の気持ちが分からなくなったことはありますか？', hint:'家族、友人、SNS…影響を受けやすい場面を思い出して'},
+    scale:{id:'s1', label:'他の人の意見を聞く前に、自分の答えを持てていますか？', low:'つい人に聞いてしまう', high:'まず自分で考えられる'},
+    mission:{
+      text:'今日、誰かに相談する前に「私はこう思う」を先に考えてみる',
+      desc:'相談すること自体は素晴らしいこと。ただ、先に「自分はどう思うか」を持っておくと、相談がもっと実りあるものになります。'
+    }
+  },
+  {
+    day:35, phase:'Phase 2：選ぶ',
+    theme:'「なんとなく」を「これがいいから」に変える',
+    desc:'なんとなく選んでいたことを、理由をつけて選んでみる。\nそれだけで、選択が「自分のもの」になります。',
+    question:{id:'q1', label:'今日、何か選ぶ時に「なんとなく」ではなく理由をつけて選べた場面はありますか？', hint:'服、食べ物、予定の順番…何でもOK'},
+    scale:{id:'s1', label:'自分の選択に「理由」を持てていますか？', low:'なんとなくが多い', high:'ちゃんと理由がある'},
+    mission:{
+      text:'今日の選択1つに「これを選んだ理由」を言葉にしてみる',
+      desc:'「この服にしたのは、この色が好きだから」「この道を通るのは、気持ちいいから」。理由は何でもいい。選んだ理由を意識するだけで、自分で選んでいる実感が生まれます。'
+    }
+  },
+  {
+    day:36, phase:'Phase 2：選ぶ',
+    theme:'迷った時、自分の軸に聞いてみる',
+    desc:'迷ったら、Phase 1で見つけた自分の軸を思い出してみてください。\n「自分の軸に照らしたら、どっち？」',
+    question:{id:'q1', label:'最近迷ったことを、自分の軸に照らして考えてみたら、どんな答えが出ますか？', hint:'正解じゃなくていい。軸を使って考える練習'},
+    scale:{id:'s1', label:'迷った時に、自分の軸を判断基準にできていますか？', low:'まだ使えていない', high:'軸で判断できている'},
+    mission:{
+      text:'今日、迷うことがあったら「私の軸ではどっち？」と考えてみる',
+      desc:'大きな決断じゃなくていい。小さな迷いでも「自分の軸ならどっちかな」と考えてみてください。軸を使う練習です。'
+    }
+  },
+  {
+    day:37, phase:'Phase 2：選ぶ',
+    theme:'1週間振り返り',
+    desc:'「選ぶ」フェーズ最初の1週間おつかれさまでした！\n小さな「自分で選ぶ」ができましたか？',
+    question:{id:'q1', label:'この1週間、「自分で選べた」と感じた場面を教えてください', hint:'小さなことでもOK。選べたことを思い出して'},
+    scale:{id:'s1', label:'1週間前と比べて「自分で選ぶ」ことに慣れてきましたか？', low:'まだ難しい', high:'だいぶ慣れてきた'},
+    mission:{
+      text:'この1週間で一番よくできた「自分で選ぶ」を思い出して、自分を褒める',
+      desc:'完璧じゃなくていい。1つでも「自分で選べた」場面があったら、それは大きな進歩です。頑張った自分を認めてあげてください。'
+    }
+  },
+  {
+    day:38, phase:'Phase 2：選ぶ',
+    theme:'「NO」は自分を大事にする言葉',
+    desc:'「NO」と言うのは、わがままじゃありません。\n自分を大事にするための、大切な言葉です。',
+    question:{id:'q1', label:'最近「本当はNOと言いたかったのに言えなかった」場面はありますか？', hint:'無理しなくていい。思い出せる範囲で'},
+    scale:{id:'s1', label:'必要な時に「NO」を言えていますか？', low:'なかなか言えない', high:'ちゃんと言える'},
+    mission:{
+      text:'今日、小さなことで1つ「NO」を言ってみる（または「少し考えさせて」と言う）',
+      desc:'いきなり大きなNOは難しい。「今日はちょっと…」「少し考えさせて」でもOK。すぐにYESと言わない練習から始めましょう。'
+    }
+  },
+  {
+    day:39, phase:'Phase 2：選ぶ',
+    theme:'相手の期待より、自分の気持ちを先に確認する',
+    desc:'「相手はこう思っているだろうから…」と先回りしていませんか？\nまず自分の気持ちを確認する習慣をつけてみましょう。',
+    question:{id:'q1', label:'誰かの期待に応えようとして、自分の気持ちを後回しにしがちな場面はどんな時ですか？', hint:'家族、職場、友人…具体的な場面を思い出して'},
+    scale:{id:'s1', label:'相手の期待より先に、自分の気持ちを確認できていますか？', low:'相手優先になりがち', high:'自分の気持ちを先に確認できる'},
+    mission:{
+      text:'今日、誰かに何か頼まれたら、答える前に3秒だけ「自分はどう感じている？」と確認する',
+      desc:'3秒でいい。「やりたい？やりたくない？」を自分に聞いてみるだけ。答えがどちらでもいい。確認する習慣が大事です。'
+    }
+  },
+  {
+    day:40, phase:'Phase 2：選ぶ',
+    theme:'「合わせる」と「自分で選んで合わせる」の違い',
+    desc:'人に合わせること自体は悪くない。\n大事なのは「仕方なく合わせる」のか「自分で選んで合わせる」のかです。',
+    question:{id:'q1', label:'最近「仕方なく合わせた」ことと「自分で選んで合わせた」こと、それぞれ思い当たりますか？', hint:'その違いは何だと思いますか？'},
+    scale:{id:'s1', label:'人に合わせる時、「自分で選んだ」という感覚を持てていますか？', low:'仕方なくが多い', high:'選んで合わせている'},
+    mission:{
+      text:'今日、誰かに合わせる場面で「私はこの人に合わせることを選ぶ」と心の中で宣言してみる',
+      desc:'同じ「合わせる」でも、自分で選んだと思えるだけで気持ちが全然違います。主語を「私」にする練習です。'
+    }
+  },
+  {
+    day:41, phase:'Phase 2：選ぶ',
+    theme:'自分の意見を「一つだけ」言ってみる',
+    desc:'全部を主張しなくていい。\nまずは「1つだけ」自分の意見を言ってみる練習です。',
+    question:{id:'q1', label:'最近「本当はこう思っていたのに言えなかった」ということはありますか？', hint:'大きなことじゃなくてOK。小さなことでも'},
+    scale:{id:'s1', label:'自分の意見を人に伝えられていますか？', low:'ほとんど言えない', high:'ちゃんと伝えられる'},
+    mission:{
+      text:'今日、会話の中で1回だけ「私は○○だと思う」と自分の意見を言ってみる',
+      desc:'「私はこっちがいいな」「私はこう思うんだけど」。1回でいい。言った後の相手の反応を気にしすぎなくてOK。言えた自分を褒めてあげてください。'
+    }
+  },
+  {
+    day:42, phase:'Phase 2：選ぶ',
+    theme:'誰かと違う選択をしても大丈夫',
+    desc:'みんなと同じじゃなくていい。\n違う選択をする勇気が、あなたらしさを育てます。',
+    question:{id:'q1', label:'周りと違う選択をして「よかった」と思えた経験はありますか？', hint:'小さなことでもOK。逆に、合わせて後悔した経験でも'},
+    scale:{id:'s1', label:'周りと違う選択をすることへの抵抗感はどのくらいですか？', low:'とても怖い', high:'あまり気にならない'},
+    mission:{
+      text:'今日、周りと違っても「私はこれがいい」と思えることを1つ選ぶ',
+      desc:'みんなが右を向いている時に、左を向いてもいい。大事なのは「自分がどうしたいか」。小さな場面でいいので、自分の選択を信じてみてください。'
+    }
+  },
+  {
+    day:43, phase:'Phase 2：選ぶ',
+    theme:'「嫌われるかも」より「自分に嘘をつかない」',
+    desc:'「嫌われたくない」は自然な気持ち。\nでも、自分に嘘をつき続けると、心が疲れてしまいます。',
+    question:{id:'q1', label:'「嫌われるかも」と思って自分の気持ちを抑えた経験はありますか？その時、本当はどうしたかった？', hint:'正直に書いて大丈夫。ここは安全な場所です'},
+    scale:{id:'s1', label:'「嫌われるかも」という恐れにどのくらい振り回されていますか？', low:'かなり振り回される', high:'あまり気にならない'},
+    mission:{
+      text:'今日、1つ「自分に正直な言動」をしてみる',
+      desc:'大きなことじゃなくていい。「本当は疲れているから、今日は早く寝よう」でもいい。自分の気持ちに正直でいることを、1つだけ選んでみてください。'
+    }
+  },
+  {
+    day:44, phase:'Phase 2：選ぶ',
+    theme:'2週間振り返り',
+    desc:'「選ぶ」フェーズ2週間おつかれさまでした！\n人間関係の中で「選ぶ」練習、どうでしたか？',
+    question:{id:'q1', label:'この2週間で、人間関係の中で「自分で選べた」と感じた場面を教えてください', hint:'NOを言えた、意見を言えた、合わせ方を変えた…何でも'},
+    scale:{id:'s1', label:'人間関係の中で「自分で選ぶ」ことに慣れてきましたか？', low:'まだ難しい', high:'だいぶ慣れてきた'},
+    mission:{
+      text:'この2週間の自分の成長を認めて、好きなことをする時間を15分つくる',
+      desc:'好きな飲み物を飲む、音楽を聴く、何もしない。15分だけ、自分のためだけの時間をつくってあげてください。'
+    }
+  },
+  {
+    day:45, phase:'Phase 2：選ぶ',
+    theme:'折り返し地点！',
+    desc:'90日の折り返し、45日目です！\nここまで来た自分を、思いきり褒めてあげてください。',
+    question:{id:'q1', label:'45日間で一番変わったと思うことは何ですか？', hint:'考え方、行動、気持ち…何でもOK'},
+    scale:{id:'s1', label:'45日前と比べて、自分で人生を作っている感覚は？', low:'あまり変わらない', high:'かなり変わった'},
+    mission:{
+      text:'Day 1の記録を読み返して、あの頃の自分と今の自分を比べてみる',
+      desc:'「記録」タブからDay 1を読み返してみてください。きっと変化に気づけるはず。その変化は、あなたが毎日コツコツ積み重ねた結果です。'
+    }
+  },
+  {
+    day:46, phase:'Phase 2：選ぶ',
+    theme:'自分の時間の使い方を見直す',
+    desc:'時間の使い方は、人生の使い方。\n今の時間の使い方を見直して、「自分の選択」にしていきましょう。',
+    question:{id:'q1', label:'今の時間の使い方で「もったいないな」と思うことはありますか？', hint:'スマホの時間、付き合い、惰性で続けていること…'},
+    scale:{id:'s1', label:'自分の時間を「自分で選んで」使えていますか？', low:'流されがち', high:'自分で選べている'},
+    mission:{
+      text:'今日、「なんとなく」使っている時間を15分だけ「自分のために」使い変えてみる',
+      desc:'SNSを見る15分を、好きなことをする15分に。小さな変化が、大きな違いを生みます。'
+    }
+  },
+  {
+    day:47, phase:'Phase 2：選ぶ',
+    theme:'「やらなきゃ」を「やりたい」に変換できるか',
+    desc:'「やらなきゃいけない」と思っていること。\n本当に全部「やらなきゃ」？「やりたい」に変えられるものはない？',
+    question:{id:'q1', label:'今「やらなきゃ」と思っていることを3つ挙げてみてください。その中で「やりたい」に変えられるものはありますか？', hint:'視点を変えると「やりたい」になるものもあるかも'},
+    scale:{id:'s1', label:'日常の「やること」を前向きに捉えられていますか？', low:'義務感が強い', high:'楽しめている'},
+    mission:{
+      text:'今日、「やらなきゃ」を1つ「やりたい」に言い換えてみる',
+      desc:'「掃除しなきゃ」→「きれいな部屋で過ごしたいから掃除する」。言い方を変えるだけで、気持ちが変わります。試してみてください。'
+    }
+  },
+  {
+    day:48, phase:'Phase 2：選ぶ',
+    theme:'やめてもいいことを1つ見つける',
+    desc:'「やめる」も立派な選択です。\n本当は必要ないのに続けていること、ありませんか？',
+    question:{id:'q1', label:'「実はやめてもいいかも」と思うことはありますか？', hint:'習慣、付き合い、SNS、家事のやり方…何でも'},
+    scale:{id:'s1', label:'不要なことを「やめる」決断ができていますか？', low:'なかなかやめられない', high:'思い切ってやめられる'},
+    mission:{
+      text:'今日、1つだけ「やめてみる」または「手を抜いてみる」',
+      desc:'完璧にやめなくてもいい。「今日だけお休み」でもいい。やめてみて、どう感じるか観察してみてください。意外と大丈夫かもしれません。'
+    }
+  },
+  {
+    day:49, phase:'Phase 2：選ぶ',
+    theme:'自分のためだけの時間を作る',
+    desc:'家族のため、仕事のため。誰かのための時間はたくさんあるけれど。\n「自分のためだけ」の時間、ありますか？',
+    question:{id:'q1', label:'自分のためだけの時間が取れたら、何をしたいですか？', hint:'誰にも邪魔されない時間。何をする？'},
+    scale:{id:'s1', label:'日常の中で「自分だけの時間」を確保できていますか？', low:'ほとんどない', high:'ちゃんと確保できている'},
+    mission:{
+      text:'今日、30分だけ「自分のためだけの時間」をつくる',
+      desc:'朝少し早く起きる、お風呂を長めにする、子どもが寝た後に。30分でいい。「自分のためだけに使う時間」を意識的につくってみてください。'
+    }
+  },
+  {
+    day:50, phase:'Phase 2：選ぶ',
+    theme:'50日目のお祝い！ここまで来た自分に拍手',
+    desc:'50日目です！90日の半分以上を超えました。\nここまで続けられるのは、本当にすごいことです。',
+    question:{id:'q1', label:'50日間で「一番自分を褒めたいこと」は何ですか？', hint:'続けたこと自体でもOK。何か変わったことでも'},
+    scale:{id:'s1', label:'「自分の人生を自分で作っている」感覚は、始めた頃と比べてどうですか？', low:'あまり変わらない', high:'かなり変わった'},
+    mission:{
+      text:'自分に「50日おめでとう」のプレゼントをする',
+      desc:'好きなお菓子、ちょっと良いコーヒー、のんびりする時間。何でもいいので、自分にご褒美をあげてください。あなたは十分頑張っています。'
+    }
+  },
+  {
+    day:51, phase:'Phase 2：選ぶ',
+    theme:'自分が心地よい環境を選ぶ',
+    desc:'環境も自分で選んでいい。\n「心地よい」と感じる場所や空間を、意識して選んでみましょう。',
+    question:{id:'q1', label:'あなたが「心地いいな」と感じる環境（場所、空間、雰囲気）はどんなものですか？', hint:'静かな場所、自然、カフェ、整った部屋…何でも'},
+    scale:{id:'s1', label:'自分が心地よい環境を選べていますか？', low:'あまり選べていない', high:'ちゃんと選べている'},
+    mission:{
+      text:'今日、自分が「心地いい」と感じる環境に5分だけ身を置く',
+      desc:'窓を開けて風を感じる、好きな音楽をかける、お気に入りの場所に座る。小さなことでいいので、自分にとって心地よい環境を選んでみてください。'
+    }
+  },
+  {
+    day:52, phase:'Phase 2：選ぶ',
+    theme:'「正解」を探すのをやめる',
+    desc:'選択に「正解」はありません。\n大事なのは「自分で選んだかどうか」です。',
+    question:{id:'q1', label:'「正解を探そうとして」選べなくなった経験はありますか？', hint:'完璧な答えを求めすぎて動けなくなったこと'},
+    scale:{id:'s1', label:'「正解がなくても選べる」自信はどのくらいありますか？', low:'正解がないと不安', high:'正解がなくても大丈夫'},
+    mission:{
+      text:'今日、何か選ぶ時に「正解かどうか」ではなく「自分がどうしたいか」で選ぶ',
+      desc:'正解を探すのではなく、「自分はこれがいい」で選ぶ。正解かどうかは後から分かること。まず選ぶことが大事です。'
+    }
+  },
+  {
+    day:53, phase:'Phase 2：選ぶ',
+    theme:'選んだ後に迷っても、それでいい',
+    desc:'選んだ後に「本当にこれでよかったのかな」と思うのは自然なこと。\nそれでも、選んだ自分を信じてあげてください。',
+    question:{id:'q1', label:'最近選んだ後に迷ったことはありますか？その時どう対処しましたか？', hint:'「あれでよかったのかな」と思ったこと'},
+    scale:{id:'s1', label:'選んだ後の「これでよかったのかな」にどう向き合えていますか？', low:'ずっと迷ってしまう', high:'「これでいい」と思える'},
+    mission:{
+      text:'今日選んだことの中で1つ「これでいい」と自分に言い聞かせてみる',
+      desc:'選んだ後にモヤモヤしたら「大丈夫、私が選んだから」と心の中で言ってみてください。選んだことを肯定する練習です。'
+    }
+  },
+  {
+    day:54, phase:'Phase 2：選ぶ',
+    theme:'失敗しても「自分で選んだ」ことに価値がある',
+    desc:'結果が思い通りにならなくても、「自分で選んだ」というプロセスに大きな価値があります。',
+    question:{id:'q1', label:'過去に「失敗した」と思った選択でも、「自分で選んだ」ことに意味があったと思えるものはありますか？', hint:'結果じゃなくて、選んだプロセスに目を向けて'},
+    scale:{id:'s1', label:'失敗しても「自分で選んだからOK」と思えますか？', low:'後悔してしまう', high:'選んだこと自体を肯定できる'},
+    mission:{
+      text:'今日、うまくいかないことがあったら「でも自分で選んだ」と認めてあげる',
+      desc:'うまくいかなくても、人のせいにしないで「自分で選んだ」と言えること。それが、自分の人生を生きている証拠です。'
+    }
+  },
+  {
+    day:55, phase:'Phase 2：選ぶ',
+    theme:'他人の正解と自分の正解は違う',
+    desc:'誰かにとっての正解が、あなたにとっても正解とは限りません。\n比べなくていい。あなたにはあなたの正解があります。',
+    question:{id:'q1', label:'「みんなはこうしているのに、私は違う」と感じることはありますか？それは本当に問題ですか？', hint:'人と違うことは、悪いことじゃない'},
+    scale:{id:'s1', label:'他人の基準と自分の基準を分けて考えられていますか？', low:'つい比べてしまう', high:'自分の基準で考えられる'},
+    mission:{
+      text:'今日、誰かと自分を比べそうになったら「私は私でいい」と心の中で言う',
+      desc:'SNSを見て、誰かと比べて落ち込みそうになったら。「私は私。あの人はあの人」。それだけで十分です。'
+    }
+  },
+  {
+    day:56, phase:'Phase 2：選ぶ',
+    theme:'「これでいい」と思える力',
+    desc:'「これがいい」と「これでいい」は違う。\nでも、「これでいい」と心から思えることも、大きな力です。',
+    question:{id:'q1', label:'今の生活の中で「これでいい」と心から思えることは何ですか？', hint:'完璧じゃなくても「これで十分」と思えるもの'},
+    scale:{id:'s1', label:'今の自分に「これでいい」と思えていますか？', low:'まだ足りない気がする', high:'十分だと思える'},
+    mission:{
+      text:'今日、「これでいい」と思えることを3つ見つける',
+      desc:'完璧じゃない日常の中にも「これでいい」はたくさんある。今の家、今の食事、今の人間関係。「十分だな」と思えるものを3つ探してみてください。'
+    }
+  },
+  {
+    day:57, phase:'Phase 2：選ぶ',
+    theme:'自分の直感を信じてみる',
+    desc:'考えすぎて動けなくなることはありませんか？\n時には、直感を信じてみるのもいい。',
+    question:{id:'q1', label:'直感で選んで「やっぱりこれでよかった」と思えた経験はありますか？', hint:'理屈じゃなくて「なんかこっちがいい」と思った経験'},
+    scale:{id:'s1', label:'自分の直感を信じられていますか？', low:'あまり信じられない', high:'けっこう信じられる'},
+    mission:{
+      text:'今日、1つだけ「考えすぎず直感で」選んでみる',
+      desc:'メニュー、服、道。1つだけ、「ぱっと思いついた方」を選んでみてください。直感は、あなたの中の知恵が出している答えかもしれません。'
+    }
+  },
+  {
+    day:58, phase:'Phase 2：選ぶ',
+    theme:'Phase 2でいちばん変わったこと',
+    desc:'「選ぶ」フェーズもあと少し。\nこの1ヶ月で一番変わったことは何ですか？',
+    question:{id:'q1', label:'Phase 2で一番変わったこと、一番の収穫は何ですか？', hint:'行動、考え方、気持ち…何が変わった？'},
+    scale:{id:'s1', label:'「自分で選ぶ」ことが、以前より自然にできるようになりましたか？', low:'まだ意識が必要', high:'自然にできるようになった'},
+    mission:{
+      text:'Phase 2での変化を、誰かに話してみる（または記録に詳しく書く）',
+      desc:'「最近こう変わったんだ」と話すと、変化がもっとはっきり見えてきます。話す相手がいなければ、今日の記録に詳しく書いてみてください。'
+    }
+  },
+  {
+    day:59, phase:'Phase 2：選ぶ',
+    theme:'自分で選べるようになった場面',
+    desc:'この30日で「自分で選べた」場面を集めてみましょう。\nきっと想像以上にたくさんあるはずです。',
+    question:{id:'q1', label:'Phase 2の中で「あ、自分で選べた！」と思えた場面を教えてください（いくつでも）', hint:'大きなことでも小さなことでも。全部書いてOK'},
+    scale:{id:'s1', label:'「選べる自分」になってきた実感はありますか？', low:'まだ不安がある', high:'自信がついてきた'},
+    mission:{
+      text:'明日のPhase 2完了に向けて、自分に「よく頑張ったね」と伝える',
+      desc:'30日間、「選ぶ」練習をし続けた自分。それだけですごいこと。明日のお祝いの前に、今日から自分を褒めてあげてください。'
+    }
+  },
+  {
+    day:60, phase:'Phase 2：選ぶ',
+    theme:'Phase 2 完了！選べる自分になってきた',
+    desc:'Phase 2おつかれさまでした！\n「自分で選ぶ」が少しずつ当たり前になってきたはず。明日からは「つくる」フェーズです。',
+    question:{id:'q1', label:'Phase 2を終えて、今の気持ちを自由に書いてください', hint:'自信がついた、まだ不安、もっとやりたい…正直に'},
+    scale:{id:'s1', label:'「自分で選べる人」になってきた実感はどのくらいですか？', low:'まだこれから', high:'かなり選べるようになった'},
+    mission:{
+      text:'Phase 2完了のお祝いをする',
+      desc:'60日間頑張った自分に、何かご褒美をあげてください。大きなことじゃなくていい。「自分で選んだご褒美」が一番嬉しいはずです。'
+    }
+  },
+  {
+    day:61, phase:'Phase 3：つくる',
+    theme:'ここからは「つくる」フェーズ',
+    desc:'Phase 1で「自分の軸」を見つけ、Phase 2で「選ぶ力」を育てました。\nここからは、その軸と選択で「自分の人生をデザイン」していきます。',
+    question:{id:'q1', label:'残りの30日で「こうなりたい」「こうしたい」と思うことは何ですか？', hint:'具体的でもぼんやりでもOK。未来の自分をイメージして'},
+    scale:{id:'s1', label:'自分の人生を「自分でデザインできる」という感覚はありますか？', low:'まだ難しい', high:'できる気がする'},
+    mission:{
+      text:'残りの30日の「テーマ」を1つ決める',
+      desc:'「もっと自分の時間を大事にする」「新しいことに挑戦する」「人との関わり方を変える」。何でもいい。30日間のテーマを1つ決めてみてください。'
+    }
+  },
+  {
+    day:62, phase:'Phase 3：つくる',
+    theme:'理想の1週間をデザインしてみる',
+    desc:'1日単位ではなく、1週間で考えてみましょう。\nどんな1週間だったら、自分らしく生きられる？',
+    question:{id:'q1', label:'あなたにとって「理想の1週間」はどんなスケジュールですか？', hint:'月曜から日曜まで、どんな風に過ごしたい？'},
+    scale:{id:'s1', label:'今の1週間は、理想にどのくらい近いですか？', low:'かなり遠い', high:'けっこう近い'},
+    mission:{
+      text:'理想の1週間の中から、今週1つだけ取り入れてみる',
+      desc:'「水曜の夜は自分の時間にする」「土曜の朝は散歩する」。1つだけ、理想の要素を今週に組み込んでみてください。'
+    }
+  },
+  {
+    day:63, phase:'Phase 3：つくる',
+    theme:'自分の中の「ルール」を作る',
+    desc:'誰かの「こうすべき」じゃなく、自分だけの「マイルール」を作ってみましょう。\nあなたの軸に基づいたルールです。',
+    question:{id:'q1', label:'自分の軸に基づいた「マイルール」を作るとしたら、どんなルールにしますか？', hint:'「○○な時は○○する」のような形でもOK'},
+    scale:{id:'s1', label:'自分なりの「ルール」や「基準」を持てていますか？', low:'まだ曖昧', high:'はっきり持っている'},
+    mission:{
+      text:'今日から実行する「マイルール」を1つ決める',
+      desc:'「寝る前にスマホを見ない」「朝、感謝を1つ思い浮かべる」「嫌なことは我慢しない」。自分との約束を1つ決めてみてください。'
+    }
+  },
+  {
+    day:64, phase:'Phase 3：つくる',
+    theme:'人間関係の「ちょうどいい距離」を決める',
+    desc:'すべての人と同じ距離でいなくていい。\n自分にとって心地よい距離感を、自分で決めてみましょう。',
+    question:{id:'q1', label:'あなたにとって「ちょうどいい距離感」の人間関係はどんなものですか？', hint:'近すぎず遠すぎず。どんな関わり方が心地いい？'},
+    scale:{id:'s1', label:'人との距離感を「自分で決められている」感覚はありますか？', low:'相手に合わせがち', high:'自分で決められている'},
+    mission:{
+      text:'今日、1つの人間関係で「この距離がちょうどいい」と感じる関わり方をしてみる',
+      desc:'少し距離を置きたい人には一歩引いてみる。もっと近づきたい人には声をかけてみる。自分の心地よさを基準に、距離感を調整してみてください。'
+    }
+  },
+  {
+    day:65, phase:'Phase 3：つくる',
+    theme:'自分を満たす習慣を1つ持つ',
+    desc:'自分を満たす小さな習慣があると、毎日がぐっと豊かになります。\nあなたを満たしてくれることは何ですか？',
+    question:{id:'q1', label:'毎日やると「自分が満たされるな」と感じることは何ですか？', hint:'お茶を飲む、日記を書く、ストレッチ…小さなことでOK'},
+    scale:{id:'s1', label:'日々の中で「自分を満たす時間」をどのくらい持てていますか？', low:'ほとんどない', high:'毎日ある'},
+    mission:{
+      text:'今日から「自分を満たす習慣」を1つ始めてみる',
+      desc:'大きなことじゃなくていい。毎朝5分の深呼吸、寝る前のストレッチ、好きな香りのハンドクリーム。小さくても「毎日の自分への贈り物」を始めてみてください。'
+    }
+  },
+  {
+    day:66, phase:'Phase 3：つくる',
+    theme:'「これだけは毎日やる」を1つ決める',
+    desc:'大きな変化は、小さな習慣の積み重ねから。\n「これだけは毎日やる」を1つ決めてみましょう。',
+    question:{id:'q1', label:'「これだけは毎日続けたい」と思うことは何ですか？', hint:'1分でできることでOK。続けやすさが大事'},
+    scale:{id:'s1', label:'毎日の習慣を続けられている自信はありますか？', low:'続かないことが多い', high:'続けられる自信がある'},
+    mission:{
+      text:'今日から「これだけは毎日やる」を1つ実行する',
+      desc:'ハードルは低くていい。「毎朝空を見る」「毎晩1つ今日の良かったことを思い出す」。小さく始めて、続けることが大事です。'
+    }
+  },
+  {
+    day:67, phase:'Phase 3：つくる',
+    theme:'1週間振り返り',
+    desc:'「つくる」フェーズ最初の1週間おつかれさまでした！\n人生をデザインする感覚、少しずつ掴めてきましたか？',
+    question:{id:'q1', label:'この1週間で「自分の人生をつくっている」と感じた瞬間はありましたか？', hint:'ルールを決めた、習慣を始めた…何でもOK'},
+    scale:{id:'s1', label:'「自分の人生をデザインしている」感覚はどのくらいありますか？', low:'まだこれから', high:'けっこう感じている'},
+    mission:{
+      text:'この1週間で始めた習慣やルールを確認して、続いているものを褒める',
+      desc:'全部続いていなくても大丈夫。1つでも意識できていたら十分です。「始めようとした」こと自体が素晴らしいこと。'
+    }
+  },
+  {
+    day:68, phase:'Phase 3：つくる',
+    theme:'変化を怖がらなくていい',
+    desc:'変わることは、怖いこと。でも、あなたはもう変わり始めています。\nその変化を、怖がらずに受け入れてあげましょう。',
+    question:{id:'q1', label:'自分が変わっていくことに、不安や怖さを感じることはありますか？', hint:'正直に書いて大丈夫。怖いと感じるのは自然なこと'},
+    scale:{id:'s1', label:'変化することへの抵抗感はどのくらいですか？', low:'かなり怖い', high:'ワクワクしている'},
+    mission:{
+      text:'今日、変化した自分を1つ見つけて「変わっていい」と認めてあげる',
+      desc:'考え方、行動、感じ方。何か1つ変わったことを見つけて、「変わってもいい。変わって大丈夫」と自分に言ってあげてください。'
+    }
+  },
+  {
+    day:69, phase:'Phase 3：つくる',
+    theme:'「前の自分」と「今の自分」の違い',
+    desc:'このプログラムを始める前と今。\n自分の中で何が変わりましたか？',
+    question:{id:'q1', label:'プログラムを始める前の自分と今の自分、一番大きな違いは何ですか？', hint:'行動、考え方、人との関わり方…何でも'},
+    scale:{id:'s1', label:'「前の自分」と「今の自分」の変化を実感できていますか？', low:'あまり感じない', high:'はっきり感じる'},
+    mission:{
+      text:'Day 1と今日の自分を比べて、「ここが変わった」を3つ見つける',
+      desc:'小さなことでいい。「前より自分の意見が言えるようになった」「好きなことが分かるようになった」。変化に気づくことが、自信につながります。'
+    }
+  },
+  {
+    day:70, phase:'Phase 3：つくる',
+    theme:'自分との約束を守る',
+    desc:'誰かとの約束は守るのに、自分との約束は後回しにしていませんか？\n自分との約束を守ることが、自信につながります。',
+    question:{id:'q1', label:'最近「自分との約束」を守れたこと、守れなかったことはありますか？', hint:'ダイエット、習慣、「今日は早く寝る」…何でも'},
+    scale:{id:'s1', label:'自分との約束をどのくらい守れていますか？', low:'あまり守れていない', high:'しっかり守れている'},
+    mission:{
+      text:'今日、自分との小さな約束を1つ決めて、必ず守る',
+      desc:'「今日は○時に寝る」「甘いものは1つだけ」「10分歩く」。小さくていいから、自分との約束を守ってみてください。守れたら自信がつきます。'
+    }
+  },
+  {
+    day:71, phase:'Phase 3：つくる',
+    theme:'周りの反応が変わってきた？',
+    desc:'あなたが変わると、周りの人の反応も少しずつ変わってきます。\n何か変化に気づいていますか？',
+    question:{id:'q1', label:'あなたが変わり始めてから、周りの人の反応で変化を感じることはありますか？', hint:'家族、友人、職場の人…何か変わった？'},
+    scale:{id:'s1', label:'周りの人との関係に良い変化を感じますか？', low:'あまり感じない', high:'良い変化を感じる'},
+    mission:{
+      text:'今日、大切な人との会話で「自分の気持ち」を1つ素直に伝えてみる',
+      desc:'「嬉しい」「ありがとう」「こうしてもらえると助かる」。素直な気持ちを伝えると、相手との関係がもっと良くなります。'
+    }
+  },
+  {
+    day:72, phase:'Phase 3：つくる',
+    theme:'うまくいかない日があっても、それは後退じゃない',
+    desc:'調子が悪い日、前に戻ったような気がする日。\nそれは後退じゃなく、成長の過程です。',
+    question:{id:'q1', label:'最近「うまくいかないな」「前に戻っちゃったかも」と感じたことはありますか？', hint:'正直に書いて大丈夫。そういう日もあって当然'},
+    scale:{id:'s1', label:'うまくいかない日があっても「大丈夫」と思えますか？', low:'すぐ落ち込む', high:'受け止められる'},
+    mission:{
+      text:'今日、うまくいかないことがあったら「これも成長の一部」と受け止めてみる',
+      desc:'完璧な日なんてない。うまくいかない日は、自分を責めないで「こういう日もある」と受け止めてあげてください。それが、本当の強さです。'
+    }
+  },
+  {
+    day:73, phase:'Phase 3：つくる',
+    theme:'自分を応援してくれる人を大事にする',
+    desc:'あなたの変化を応援してくれる人、受け入れてくれる人。\nそういう人との関係を、意識して大事にしていきましょう。',
+    question:{id:'q1', label:'あなたの変化を応援してくれている人、受け入れてくれている人は誰ですか？', hint:'家族、友人、このプログラムの仲間…'},
+    scale:{id:'s1', label:'自分を応援してくれる人との関係を大事にできていますか？', low:'あまりできていない', high:'しっかり大事にしている'},
+    mission:{
+      text:'今日、自分を応援してくれている人に感謝を伝える',
+      desc:'直接でもLINEでもいい。「いつもありがとう」「あなたがいてくれて嬉しい」。一言伝えるだけで、お互いの絆が深まります。'
+    }
+  },
+  {
+    day:74, phase:'Phase 3：つくる',
+    theme:'2週間振り返り',
+    desc:'「つくる」フェーズ2週間おつかれさまでした！\n新しい自分が育ってきている実感はありますか？',
+    question:{id:'q1', label:'この2週間で「自分の人生をつくっている」と一番感じた瞬間は？', hint:'習慣、人間関係、考え方…何の場面でも'},
+    scale:{id:'s1', label:'「新しい自分」が定着してきた実感はありますか？', low:'まだ不安定', high:'かなり定着してきた'},
+    mission:{
+      text:'2週間の自分を振り返って、成長を3つ書き出す',
+      desc:'小さなことでいい。「毎日の習慣が続いている」「自分の意見が言えた」「イライラが減った」。成長を言葉にすることで、自信が育ちます。'
+    }
+  },
+  {
+    day:75, phase:'Phase 3：つくる',
+    theme:'あと15日！',
+    desc:'あと15日で90日間が完了します。\nここまで来た自分を、今日は思いきり褒めてあげてください。',
+    question:{id:'q1', label:'75日間続けてきた自分に、何と声をかけてあげたいですか？', hint:'素直な気持ちを、自分に向けて'},
+    scale:{id:'s1', label:'「自分の人生を自分で作っている」実感は、始めた頃と比べてどうですか？', low:'あまり変わらない', high:'大きく変わった'},
+    mission:{
+      text:'75日間の自分を祝って、今日は好きなことを思いきり楽しむ',
+      desc:'好きなものを食べる、好きな場所に行く、好きな人と過ごす。今日は「自分を楽しませる日」にしてあげてください。'
+    }
+  },
+  {
+    day:76, phase:'Phase 3：つくる',
+    theme:'「自分の軸」が揺れる時の対処法',
+    desc:'自分の軸がはっきりしても、揺れる日はあります。\nそんな時の「対処法」を持っておきましょう。',
+    question:{id:'q1', label:'自分の軸が揺れそうになる時、どんな状況ですか？そんな時、どうしたら立て直せそうですか？', hint:'人に影響された時、疲れた時、不安な時…'},
+    scale:{id:'s1', label:'自分の軸が揺れた時の対処法を持っていますか？', low:'分からない', high:'対処法がある'},
+    mission:{
+      text:'「自分の軸が揺れた時にやること」を1つ決めておく',
+      desc:'深呼吸する、このプログラムの記録を読み返す、信頼できる人に話す。揺れた時に「これをやろう」というお守りを持っておくと安心です。'
+    }
+  },
+  {
+    day:77, phase:'Phase 3：つくる',
+    theme:'新しい自分が「普通」になってきた',
+    desc:'最初は意識しないとできなかったことが、だんだん「普通」になってきていませんか？\nそれが本当の変化です。',
+    question:{id:'q1', label:'以前は意識しないとできなかったのに、今は自然にできるようになったことはありますか？', hint:'自分の意見を言う、NOと言う、自分を優先する…'},
+    scale:{id:'s1', label:'「新しい自分」が自然になってきた実感はありますか？', low:'まだ意識が必要', high:'もう自然にできている'},
+    mission:{
+      text:'今日、「前は難しかったけど、今は自然にできること」を1つ見つけて喜ぶ',
+      desc:'それが「普通」になったということは、あなたの中で変化が定着したということ。すごいことです。気づいたら、自分を褒めてあげてください。'
+    }
+  },
+  {
+    day:78, phase:'Phase 3：つくる',
+    theme:'自分の成長を誰かに話してみる',
+    desc:'自分の変化を言葉にして誰かに伝えてみましょう。\n話すことで、変化がもっと確かなものになります。',
+    question:{id:'q1', label:'この90日間の変化を誰かに話すとしたら、何と伝えますか？', hint:'「こんな風に変わったよ」「こう思えるようになったよ」'},
+    scale:{id:'s1', label:'自分の成長を人に話す自信はありますか？', low:'恥ずかしい', high:'自信を持って話せる'},
+    mission:{
+      text:'今日、信頼できる人に「最近こんな風に変わったんだ」と話してみる',
+      desc:'大げさじゃなくていい。「最近、自分の意見を言えるようになってきた気がする」くらいでOK。話す相手がいなければ、SNSに書いてみるのもいい。'
+    }
+  },
+  {
+    day:79, phase:'Phase 3：つくる',
+    theme:'「自分の人生」と胸を張って言えること',
+    desc:'「これは自分が選んだ人生」と胸を張って言えること。\nそれが見つかったら、もう大丈夫です。',
+    question:{id:'q1', label:'今の生活の中で「これは自分が選んだ」と胸を張って言えることは何ですか？', hint:'大きなことじゃなくていい。「私がこうしたかった」と言えるもの'},
+    scale:{id:'s1', label:'「自分の人生を生きている」と胸を張って言えますか？', low:'まだ言えない', high:'胸を張って言える'},
+    mission:{
+      text:'鏡の前で「これは私の人生」と言ってみる',
+      desc:'照れくさくても大丈夫。「これは私の人生。私が選んで、私がつくっている」。その言葉が、あなたの自信になります。'
+    }
+  },
+  {
+    day:80, phase:'Phase 3：つくる',
+    theme:'80日！残り10日を大切に',
+    desc:'80日おめでとうございます！\n残り10日。1日1日を大切に、仕上げていきましょう。',
+    question:{id:'q1', label:'残りの10日間で「これだけはやりたい」ということはありますか？', hint:'やり残したこと、もっと深めたいこと'},
+    scale:{id:'s1', label:'80日間の自分の成長に満足していますか？', low:'まだ物足りない', high:'とても満足している'},
+    mission:{
+      text:'残り10日の「やりたいことリスト」を書いてみる',
+      desc:'大きなことじゃなくていい。「感謝を伝える」「自分の時間を楽しむ」「記録を読み返す」。残りの日々を充実させるリストを作ってみてください。'
+    }
+  },
+  {
+    day:81, phase:'Phase 3：つくる',
+    theme:'これからも続けたいこと',
+    desc:'90日間で身につけたこと、始めたこと。\n終わった後も続けたいことは何ですか？',
+    question:{id:'q1', label:'このプログラムが終わった後も「続けたい」と思う習慣や考え方は何ですか？', hint:'毎日の問いかけ、マイルール、自分の時間…'},
+    scale:{id:'s1', label:'プログラム後も「自分の軸」で生き続ける自信はありますか？', low:'少し不安', high:'自信がある'},
+    mission:{
+      text:'「プログラム後も続けること」を3つ書き出す',
+      desc:'習慣、考え方、行動。何でもいいので3つ。これがあなたの「これからの指針」になります。'
+    }
+  },
+  {
+    day:82, phase:'Phase 3：つくる',
+    theme:'90日間で手に入れたもの',
+    desc:'もうすぐ90日。この旅で手に入れたものを、しっかり受け取ってあげましょう。',
+    question:{id:'q1', label:'90日間で「手に入れた」と思うものは何ですか？', hint:'自信、軸、習慣、考え方の変化…何でも'},
+    scale:{id:'s1', label:'90日間の自分の旅に満足していますか？', low:'まだまだこれから', high:'とても満足している'},
+    mission:{
+      text:'90日間で手に入れたものを、紙に書いてみる',
+      desc:'「自分の軸が見つかった」「選べるようになった」「自分を大事にできるようになった」。言葉にして書くことで、しっかり「自分のもの」になります。'
+    }
+  },
+  {
+    day:83, phase:'Phase 3：つくる',
+    theme:'まだ変わりたいことはある？',
+    desc:'90日間で大きく成長しました。\nでも、まだ変わりたいこと、挑戦したいことはありますか？',
+    question:{id:'q1', label:'まだ変わりたいこと、これから挑戦してみたいことはありますか？', hint:'これからの自分への「宿題」。何でもOK'},
+    scale:{id:'s1', label:'これからも自分を変えていく意欲はありますか？', low:'少し疲れた', high:'ワクワクしている'},
+    mission:{
+      text:'「次に挑戦したいこと」を1つ決める',
+      desc:'今日すぐやらなくていい。「いつかこれに挑戦したい」を1つ心に留めておくだけで、未来が楽しみになります。'
+    }
+  },
+  {
+    day:84, phase:'Phase 3：つくる',
+    theme:'自分への感謝を書いてみる',
+    desc:'90日間、毎日自分と向き合い続けた自分。\n今日は、その自分に「ありがとう」を伝えましょう。',
+    question:{id:'q1', label:'90日間頑張った自分に、感謝の言葉を書いてください', hint:'「よく頑張ったね」「ありがとう」…素直な気持ちを'},
+    scale:{id:'s1', label:'自分に感謝できていますか？', low:'まだ足りないと思いがち', high:'ちゃんと感謝できている'},
+    mission:{
+      text:'鏡の前で自分に「ありがとう」と言う',
+      desc:'90日間、逃げずに自分と向き合った自分。「ありがとう」「よく頑張ったね」と声に出して伝えてあげてください。'
+    }
+  },
+  {
+    day:85, phase:'Phase 3：つくる',
+    theme:'次の90日はどう過ごしたい？',
+    desc:'このプログラムは終わっても、あなたの人生は続きます。\n次の90日をどう過ごしたいですか？',
+    question:{id:'q1', label:'次の90日間で「こうしたい」「こうなりたい」と思うことは？', hint:'仕事、趣味、人間関係…自由に想像して'},
+    scale:{id:'s1', label:'次の90日が楽しみですか？', low:'少し不安', high:'とても楽しみ'},
+    mission:{
+      text:'次の90日の「テーマ」を1つ決める',
+      desc:'「新しいことに挑戦する90日」「人との関わりを深める90日」「自分を磨く90日」。テーマを決めると、日々に軸ができます。'
+    }
+  },
+  {
+    day:86, phase:'Phase 3：つくる',
+    theme:'大事な人に伝えたいこと',
+    desc:'自分が変わった時、周りの人にも伝えたいことがあるかもしれません。\n大事な人に、今の気持ちを伝えてみましょう。',
+    question:{id:'q1', label:'大事な人に今伝えたいことはありますか？誰に、何を伝えたい？', hint:'家族、パートナー、友人…誰にでも'},
+    scale:{id:'s1', label:'大事な人に素直な気持ちを伝えられていますか？', low:'なかなか言えない', high:'素直に伝えられる'},
+    mission:{
+      text:'今日、大事な人に1つ気持ちを伝える',
+      desc:'「ありがとう」「大好き」「いつも助かってる」。何でもいい。普段は照れくさくて言えないことを、今日は勇気を出して伝えてみてください。'
+    }
+  },
+  {
+    day:87, phase:'Phase 3：つくる',
+    theme:'1年後の自分に手紙を書く',
+    desc:'1年後のあなたに、今の自分から手紙を書いてみましょう。\nどんな自分になっていてほしいですか？',
+    question:{id:'q1', label:'1年後の自分に手紙を書くとしたら、何と伝えますか？', hint:'期待、応援、お願い…自由に書いてみて'},
+    scale:{id:'s1', label:'1年後の自分に期待できていますか？', low:'不安の方が大きい', high:'とても期待している'},
+    mission:{
+      text:'1年後の自分に手紙を書いて、どこかに保存しておく',
+      desc:'スマホのメモ、ノート、封筒に入れて。1年後に読み返した時、きっと「あの時の私、こんなこと考えてたんだ」と思えるはずです。'
+    }
+  },
+  {
+    day:88, phase:'Phase 3：つくる',
+    theme:'Day 1の記録を読み返してみて',
+    desc:'Day 1の自分は、何を書いていましたか？\n90日前の自分と今の自分を、改めて比べてみましょう。',
+    question:{id:'q1', label:'Day 1の記録を読み返して、どう感じましたか？', hint:'変化、驚き、懐かしさ…正直な感想を'},
+    scale:{id:'s1', label:'Day 1の自分と比べて、今の自分はどのくらい成長しましたか？', low:'あまり変わっていない', high:'大きく成長した'},
+    mission:{
+      text:'Day 1の自分に「大丈夫だよ、ちゃんと変われるよ」と心の中で伝える',
+      desc:'90日前の不安だった自分に、今のあなたから声をかけてあげてください。「大丈夫。あなたはちゃんと変われるよ」と。'
+    }
+  },
+  {
+    day:89, phase:'Phase 3：つくる',
+    theme:'明日で最後。今の気持ちを記録する',
+    desc:'明日が90日目、最後の日です。\n今の気持ちを、そのまま記録しておきましょう。',
+    question:{id:'q1', label:'明日で90日間が終わります。今、どんな気持ちですか？', hint:'嬉しい、寂しい、達成感、不安…何でもOK'},
+    scale:{id:'s1', label:'90日間やり切れそうな自信はありますか？', low:'少し不安', high:'やり切れる'},
+    mission:{
+      text:'明日の最終日をどう過ごしたいか、考えてみる',
+      desc:'特別なことをしなくてもいい。でも、「最後の1日をどう過ごそう」と考えてみてください。自分で選んだ1日にしましょう。'
+    }
+  },
+  {
+    day:90, phase:'Phase 3：つくる',
+    theme:'90日間おつかれさまでした',
+    desc:'90日間の旅が終わります。\n自分の軸で、自分の人生をつくる力。それが、あなたの中に育っています。',
+    question:{id:'q1', label:'90日間を終えて、今の自分に一言伝えるとしたら何と言いますか？', hint:'自由に。あなたの言葉で'},
+    scale:{id:'s1', label:'「自分の人生を自分で作っている」という実感はどのくらいですか？', low:'まだこれから', high:'しっかり感じている'},
+    mission:{
+      text:'今日という1日を「自分の軸」で過ごす',
+      desc:'今日のすべての選択を、自分の軸で。それが、91日目以降も続いていく「あなたの人生」です。おつかれさまでした。'
+    }
+  }
+];
+
+// ============================================================
+// 褒めメッセージ
+// ============================================================
+// 褒めメッセージ（Day番号に紐づく。そのDayを開いた時に表示）
+const praiseMessages = {
+  1: {
+    title:'最初の一歩、おめでとうございます',
+    text:'「始める」って、実はいちばん難しいこと。\n自分と向き合おうとしたこと自体がすごいです。'
+  },
+  7: {
+    title:'7つ目のワーク！続けられていますね',
+    text:'自分に問いかけ続けている。\nそれだけで、あなたの中に小さな変化が始まっています。'
+  },
+  14: {
+    title:'14ワーク達成。自分のことが見えてきたはず',
+    text:'最初の頃の記録を読み返してみてください。\n「あ、この時こう感じてたんだ」って気づけたら、それが成長です。'
+  },
+  21: {
+    title:'21ワーク。自分の強みが見えてきましたね',
+    text:'「好き」「価値観」「強み」と、自分の輪郭がだんだんはっきりしてきたはず。'
+  },
+  30: {
+    title:'Phase 1 クリア！自分の軸が見えてきましたね',
+    text:'30ワーク、自分と向き合い続けたあなたは、もう「なんとなく流される人」ではありません。\nここからは、見つけた軸で「選ぶ」練習に入ります。'
+  },
+  45: {
+    title:'折り返し地点。ここまで来られる人は多くない',
+    text:'最初の頃の自分と今の自分、比べてみてください。\n選び方が変わってきていませんか？'
+  },
+  60: {
+    title:'Phase 2 クリア！自分で選べる人になってきた',
+    text:'「自分で選ぶ」が少しずつ当たり前になってきたはず。\nここからは、自分の人生をデザインするフェーズです。'
+  },
+  75: {
+    title:'あと15ワーク。新しい自分が定着してきましたね',
+    text:'もう「前の自分」には戻れない。\nそれは、あなたがちゃんと変わったということです。'
+  },
+  90: {
+    title:'90ワーク、全部やり切りました！',
+    text:'あなたは最初の自分とは違う人になっています。\n自分の軸で、自分の人生を作っていける人に。\nこの記録が、その証拠です。'
+  }
+};
+
+// ============================================================
+// 状態管理（localStorage）
+// ============================================================
+const STORAGE_KEY = 'jibunjiku90_data';
+
+function loadData(){
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+  catch(e){ return {}; }
+}
+
+function saveData(data){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function getDayData(day){
+  const data = loadData();
+  return data['day'+day] || {};
+}
+
+function setDayData(day, dayData){
+  const data = loadData();
+  data['day'+day] = dayData;
+  saveData(data);
+}
+
+function isDayDone(day){
+  const data = loadData();
+  return !!(data['day'+day] && data['day'+day].savedAt);
+}
+
+function getCompletedDays(){
+  const data = loadData();
+  let count = 0;
+  for(let d=1; d<=90; d++){
+    if(data['day'+d] && data['day'+d].savedAt) count++;
+  }
+  return count;
+}
+
+function getMissionCount(){
+  const data = loadData();
+  let count = 0;
+  for(let d=1; d<=90; d++){
+    if(data['day'+d] && data['day'+d].mission) count++;
+  }
+  return count;
+}
+
+function getScaleHistory(){
+  const data = loadData();
+  const history = [];
+  for(let d=1; d<=90; d++){
+    const dd = data['day'+d];
+    if(dd && dd.s1) history.push({day:d, value:dd.s1});
+  }
+  return history;
+}
+
+// 次にやるべきDay（最初の未完了Day）
+function getNextDay(){
+  for(let d=1; d<=90; d++){
+    if(!isDayDone(d)) return d;
+  }
+  return 90; // 全部完了
+}
+
+function startProgram(){
+  const data = loadData();
+  data.started = true;
+  saveData(data);
+  render();
+}
+
+// ============================================================
+// 描画
+// ============================================================
+let currentTab = 'list';  // list, work, growth, log
+let viewingDay = null;    // 現在表示中のDay番号
+
+function render(){
+  const app = document.getElementById('app');
+  const data = loadData();
+
+  if(!data.started){
+    renderWelcome(app);
+  } else {
+    renderMain(app);
+  }
+}
+
+function renderWelcome(app){
+  app.innerHTML = `
+    <div class="header" style="padding-top:60px">
+      <h1>自分の軸で、<br><em>自分の人生をつくる</em>90のワーク</h1>
+      <p class="sub" style="margin-top:12px;font-size:14px;line-height:1.9;color:var(--text-light)">
+        1日1つの問いかけと、1つの小さなアクション。<br>
+        自分のペースで進めて、3ヶ月後には<br>「自分で選んだ人生を生きている」と感じられる自分に。
+      </p>
+      <div style="margin-top:32px">
+        <button class="save-btn" onclick="startProgram()" style="max-width:280px;margin:0 auto">はじめる</button>
+      </div>
+      <p style="font-size:12px;color:var(--text-light);margin-top:16px">
+        Phase 1：知る（1〜30）自分の軸を見つける<br>
+        Phase 2：選ぶ（31〜60）自分の基準で決める<br>
+        Phase 3：つくる（61〜90）自分の人生をデザインする
+      </p>
+    </div>
+  `;
+}
+
+function renderMain(app){
+  const completed = getCompletedDays();
+  const pct = Math.round((completed/90)*100);
+
+  app.innerHTML = `
+    <div class="header">
+      <h1><em>自分の軸で生きる</em>90のワーク</h1>
+    </div>
+
+    <div class="progress-area">
+      <div class="progress-header">
+        <span class="progress-day">${completed}<span style="font-size:14px;font-weight:400;color:var(--text-light)"> / 90</span></span>
+        <span class="progress-phase">${completed===0?'さあ、始めよう':completed<30?'Phase 1：知る':completed<60?'Phase 2：選ぶ':completed<90?'Phase 3：つくる':'コンプリート！'}</span>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" style="width:${pct}%"></div>
+      </div>
+      <div class="progress-label">
+        <span>0</span>
+        <span>30</span>
+        <span>60</span>
+        <span>90</span>
+      </div>
+    </div>
+
+    <div class="tab-bar">
+      <div class="tab ${currentTab==='list'||currentTab==='work'?'active':''}" onclick="switchTab('list')">ワーク</div>
+      <div class="tab ${currentTab==='growth'?'active':''}" onclick="switchTab('growth')">わたしの成長</div>
+      <div class="tab ${currentTab==='log'?'active':''}" onclick="switchTab('log')">記録</div>
+    </div>
+
+    <div id="tab-content"></div>
+  `;
+
+  if(currentTab === 'work' && viewingDay) renderWork(viewingDay);
+  else if(currentTab === 'growth') renderGrowth();
+  else if(currentTab === 'log') renderLog();
+  else renderList();
+}
+
+// ============================================================
+// ワーク一覧
+// ============================================================
+function renderList(){
+  const content = document.getElementById('tab-content');
+  const nextDay = getNextDay();
+  const completed = getCompletedDays();
+
+  let html = '';
+
+  // 褒めカード（節目達成時）
+  const milestones = [10,20,30,45,50,60,75,80,90];
+  for(const m of milestones){
+    if(completed === m && praiseMessages[m]){
+      const praise = praiseMessages[m];
+      html += `
+        <div class="praise-card animate" style="margin-bottom:20px">
+          <div class="praise-icon">${m===90?'🎉':m>=60?'🌟':m>=30?'✨':'🌱'}</div>
+          <div class="praise-title">${praise.title}</div>
+          <div class="praise-text">${praise.text.replace(/\n/g,'<br>')}</div>
+          <div>
+            <span class="praise-stat">記録 ${completed}ワーク</span>
+            <span class="praise-stat">アクション ${getMissionCount()}回達成</span>
+          </div>
+        </div>
+      `;
+      break;
+    }
+  }
+
+  // 次にやるワークボタン
+  if(completed < 90){
+    const nextP = program.find(x => x.day === nextDay);
+    html += `
+      <div style="margin-bottom:20px;cursor:pointer" onclick="openDay(${nextDay})">
+        <div class="theme-card animate">
+          <div class="theme-label">次のワーク</div>
+          <div class="theme-text">Day ${nextDay}：${nextP?nextP.theme:''}</div>
+          <div style="margin-top:12px">
+            <span style="display:inline-block;background:var(--accent);color:#fff;font-size:14px;font-weight:600;padding:8px 24px;border-radius:20px">このワークをやる</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Phase別の一覧
+  const phases = [
+    {label:'Phase 1：知る — 自分の軸を見つける', from:1, to:30},
+    {label:'Phase 2：選ぶ — 自分の基準で決める', from:31, to:60},
+    {label:'Phase 3：つくる — 自分の人生をデザインする', from:61, to:90}
+  ];
+
+  phases.forEach(ph => {
+    html += `<div class="phase-section">`;
+    html += `<div class="phase-title">${ph.label}</div>`;
+    html += `<div class="day-grid">`;
+    for(let d=ph.from; d<=ph.to; d++){
+      const p = program.find(x => x.day === d);
+      const done = isDayDone(d);
+      const isNext = d === nextDay;
+      html += `<div class="day-cell ${done?'done':''} ${isNext?'current':''}" onclick="openDay(${d})">
+        <span class="day-num">${d}</span>
+        <span class="day-theme">${p?p.theme.substring(0,8):''}</span>
+      </div>`;
+    }
+    html += `</div></div>`;
+  });
+
+  content.innerHTML = html;
+}
+
+// ============================================================
+// ワーク詳細（1日分）
+// ============================================================
+function openDay(day){
+  viewingDay = day;
+  currentTab = 'work';
+  render();
+}
+
+function renderWork(day){
+  const content = document.getElementById('tab-content');
+  const p = program.find(x => x.day === day);
+  if(!p){ content.innerHTML = `<div class="empty">このワークは見つかりません</div>`; return; }
+
+  const saved = getDayData(day);
+  const completed = getCompletedDays();
+
+  // 褒めメッセージ（ワーク数ベース。このDayを保存した直後に該当数になる場合に表示）
+  const praise = praiseMessages[day];
+
+  let html = '';
+
+  html += `<button class="back-to-list" onclick="switchTab('list')">← ワーク一覧に戻る</button>`;
+
+  // 褒めカード
+  if(praise && isDayDone(day)){
+    html += `
+      <div class="praise-card animate">
+        <div class="praise-icon">${day===90?'🎉':day>=60?'🌟':day>=30?'✨':'🌱'}</div>
+        <div class="praise-title">${praise.title}</div>
+        <div class="praise-text">${praise.text.replace(/\n/g,'<br>')}</div>
+        <div>
+          <span class="praise-stat">記録 ${completed}ワーク</span>
+          <span class="praise-stat">アクション ${getMissionCount()}回達成</span>
+        </div>
+      </div>
+    `;
+  }
+
+  html += `
+    <div class="theme-card animate">
+      <div class="theme-label">DAY ${p.day} のテーマ</div>
+      <div class="theme-text">${p.theme}</div>
+      <div class="theme-desc">${p.desc.replace(/\n/g,'<br>')}</div>
+    </div>
+
+    <div class="section animate">
+      <h3><span class="icon">📝</span>問いかけ</h3>
+      <div class="journal-group">
+        <label class="journal-label">${p.question.label}</label>
+        ${p.question.hint ? `<div class="journal-hint">${p.question.hint}</div>` : ''}
+        <textarea class="journal-area" id="inp_${p.question.id}" placeholder="一行でもOK。思いついたまま書いてみてください">${saved[p.question.id]||''}</textarea>
+      </div>
+    </div>
+
+    <div class="section animate">
+      <h3><span class="icon">📊</span>チェック</h3>
+      <div class="scale-wrap">
+        <label class="scale-label">${p.scale.label}</label>
+        <div class="scale-options">
+          ${[1,2,3,4,5].map(n => `
+            <button class="scale-btn ${saved[p.scale.id]==n?'selected':''}" onclick="selectScale('${p.scale.id}',${n},${day})" id="scale_${p.scale.id}_${n}">
+              <span class="scale-num">${n}</span>
+              <span class="scale-text">${n===1?p.scale.low:n===5?p.scale.high:''}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="section animate">
+      <h3><span class="icon">🎯</span>今日のアクション</h3>
+      <div class="mission-box">
+        <div class="mission-title">今日の一歩</div>
+        <div class="mission-text">${p.mission.text}</div>
+        <div class="mission-desc">${p.mission.desc}</div>
+        <div class="mission-check" onclick="toggleMission(${day})">
+          <div class="mission-checkbox ${saved.mission?'checked':''}" id="mission_check"></div>
+          <span>${saved.mission?'できた！':'できたらチェック'}</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="save-btn" onclick="saveDayData(${day})">記録を保存する</button>
+    <div class="saved-msg" id="saved-msg">保存しました ✓</div>
+  `;
+
+  // 前後ナビ
+  html += `<div style="display:flex;justify-content:space-between;margin-top:16px">`;
+  if(day > 1) html += `<button class="back-to-list" onclick="openDay(${day-1})">← Day ${day-1}</button>`;
+  else html += `<span></span>`;
+  if(day < 90) html += `<button class="back-to-list" onclick="openDay(${day+1})" style="flex-direction:row-reverse">Day ${day+1} →</button>`;
+  else html += `<span></span>`;
+  html += `</div>`;
+
+  content.innerHTML = html;
+}
+
+// ============================================================
+// 成長タブ
+// ============================================================
+function renderGrowth(){
+  const content = document.getElementById('tab-content');
+  const history = getScaleHistory();
+  const completed = getCompletedDays();
+  const missions = getMissionCount();
+
+  let html = '';
+
+  html += `<div class="growth-card">
+    <h3><span class="icon">📈</span>「自分で人生を作っている」実感の推移</h3>`;
+
+  if(history.length === 0){
+    html += `<div class="empty" style="padding:20px">まだ記録がありません。<br>ワークを始めると、ここにグラフが表示されます。</div>`;
+  } else {
+    html += `<div class="growth-chart">`;
+    history.forEach((h, i) => {
+      const heightPct = (h.value / 5) * 100;
+      const isLast = i === history.length - 1;
+      html += `<div class="growth-bar ${isLast?'today':'filled'}" style="height:${heightPct}%">
+        <span class="growth-bar-label">${h.day}</span>
+      </div>`;
+    });
+    html += `</div>`;
+    html += `<div class="growth-legend">
+      <span class="leg-past">これまで</span>
+      <span class="leg-today">最新</span>
+    </div>`;
+  }
+  html += `</div>`;
+
+  html += `<div class="section">
+    <h3><span class="icon">🏅</span>数字で見るわたしの歩み</h3>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:120px;background:var(--bg);border-radius:12px;padding:20px;text-align:center">
+        <div style="font-size:32px;font-weight:700;color:var(--accent)">${completed}</div>
+        <div style="font-size:12px;color:var(--text-light);margin-top:4px">完了したワーク</div>
+      </div>
+      <div style="flex:1;min-width:120px;background:var(--green-bg);border-radius:12px;padding:20px;text-align:center">
+        <div style="font-size:32px;font-weight:700;color:var(--green)">${missions}</div>
+        <div style="font-size:12px;color:var(--text-light);margin-top:4px">アクション達成</div>
+      </div>
+    </div>
+  </div>`;
+
+  if(history.length >= 2){
+    const first = history[0];
+    const last = history[history.length - 1];
+    const diff = last.value - first.value;
+    if(diff > 0){
+      html += `<div class="praise-card">
+        <div class="praise-icon">🌿</div>
+        <div class="praise-title">Day ${first.day}の時より、${diff}ポイント上がっています</div>
+        <div class="praise-text">ちゃんと前に進んでいますよ。<br>この変化は、あなたが自分と向き合った結果です。</div>
+      </div>`;
+    } else if(diff === 0){
+      html += `<div class="praise-card">
+        <div class="praise-icon">🌿</div>
+        <div class="praise-title">スコアは同じでも、中身は変わっているはず</div>
+        <div class="praise-text">数字に出ない変化もあります。<br>記録を読み返すと、考え方や言葉が変わってきていることに気づけるかもしれません。</div>
+      </div>`;
+    }
+  }
+
+  content.innerHTML = html;
+}
+
+// ============================================================
+// 記録タブ
+// ============================================================
+function renderLog(){
+  const content = document.getElementById('tab-content');
+  const data = loadData();
+  let html = '';
+  let hasLog = false;
+
+  for(let d = 90; d >= 1; d--){
+    const dayData = data['day'+d];
+    if(!dayData || !dayData.savedAt) continue;
+    const p = program.find(x => x.day === d);
+    if(!p) continue;
+
+    hasLog = true;
+    html += `<div class="log-card" style="cursor:pointer" onclick="openDay(${d})">`;
+    html += `<div class="log-date">Day ${d} — ${p.theme}</div>`;
+
+    if(dayData[p.question.id]){
+      html += `<div class="log-q">${p.question.label}</div>`;
+      html += `<div class="log-a">${dayData[p.question.id].replace(/\n/g,'<br>')}</div>`;
+    }
+
+    if(dayData[p.scale.id]){
+      html += `<div class="log-scale">${p.scale.label}：${dayData[p.scale.id]} / 5</div>`;
+    }
+
+    if(dayData.mission){
+      html += `<div class="log-mission">✓ アクション達成</div>`;
+    }
+
+    html += `</div>`;
+  }
+
+  if(!hasLog){
+    html = `<div class="empty">まだ記録がありません。<br>ワーク一覧から始めてみましょう。</div>`;
+  }
+
+  content.innerHTML = html;
+}
+
+// ============================================================
+// 操作
+// ============================================================
+function selectScale(scaleId, value, day){
+  const saved = getDayData(day);
+  saved[scaleId] = value;
+  setDayData(day, saved);
+
+  for(let i=1;i<=5;i++){
+    const el = document.getElementById(`scale_${scaleId}_${i}`);
+    if(el) el.className = 'scale-btn' + (i===value?' selected':'');
+  }
+}
+
+function toggleMission(day){
+  const saved = getDayData(day);
+  saved.mission = !saved.mission;
+  setDayData(day, saved);
+
+  const el = document.getElementById('mission_check');
+  if(el){
+    el.className = 'mission-checkbox' + (saved.mission?' checked':'');
+    el.parentElement.querySelector('span').textContent = saved.mission?'できた！':'できたらチェック';
+  }
+}
+
+function saveDayData(day){
+  const p = program.find(x => x.day === day);
+  if(!p) return;
+
+  const saved = getDayData(day);
+
+  const el = document.getElementById('inp_'+p.question.id);
+  if(el) saved[p.question.id] = el.value;
+
+  saved.savedAt = new Date().toISOString();
+  setDayData(day, saved);
+
+  const msg = document.getElementById('saved-msg');
+  if(msg){ msg.className = 'saved-msg show'; setTimeout(()=>msg.className='saved-msg',2000); }
+
+  // 保存後にヘッダーの数字を更新
+  setTimeout(()=>render(), 500);
+}
+
+function switchTab(tab){
+  currentTab = tab;
+  viewingDay = null;
+  render();
+}
+
+// 初期表示
+render();
+</script>
+</body>
+</html>
